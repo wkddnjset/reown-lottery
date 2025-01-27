@@ -1,9 +1,13 @@
+import { useRouter } from 'next/router'
+
 import { Button, Center, Text } from '@chakra-ui/react'
 
-import { useAppKit } from '@/configs/appkit'
+import { useAppKit, useAppKitAccount } from '@/configs/appkit'
 
 function Home() {
   const { open } = useAppKit()
+  const { isConnected } = useAppKitAccount()
+  const router = useRouter()
   return (
     <Center h={'100%'} borderRadius={'8px'} flexDir={'column'} gap={'20px'}>
       <Text
@@ -21,6 +25,11 @@ function Home() {
         <Button onClick={() => open({ view: 'Networks' })}>
           Open Network Modal
         </Button>
+        {isConnected && (
+          <Button onClick={() => router.push('/start')}>
+            Go to Game Start
+          </Button>
+        )}
       </>
     </Center>
   )

@@ -1,4 +1,5 @@
 import { SolanaAdapter } from '@reown/appkit-adapter-solana/react'
+import { CloudAuthSIWX } from '@reown/appkit-siwx'
 import { solana, solanaDevnet, solanaTestnet } from '@reown/appkit/networks'
 import {
   createAppKit,
@@ -30,7 +31,7 @@ const solanaAdapter = new SolanaAdapter({
 const metadata = {
   name: 'reown-lottery',
   description: 'AppKit Example',
-  url: 'https://reown.com/appkit', // origin must match your domain & subdomain
+  url: 'https://reown-lottery.vercel.app', // origin must match your domain & subdomain
   icons: ['https://assets.reown.com/reown-profile-pic.png'],
 }
 
@@ -44,7 +45,9 @@ const modal = createAppKit({
     analytics: true,
     socials: ['google', 'x', 'github'],
     emailShowWallets: true, // default to true
+    onramp: false, // Optional - true by default
   },
+  //   siwx: new CloudAuthSIWX(),
   projectId,
   themeMode: 'light',
 })
