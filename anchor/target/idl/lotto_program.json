@@ -1,0 +1,127 @@
+{
+  "address": "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF",
+  "metadata": {
+    "name": "lotto_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "buy_ticket",
+      "discriminator": [
+        11,
+        24,
+        17,
+        193,
+        168,
+        116,
+        164,
+        169
+      ],
+      "accounts": [
+        {
+          "name": "lotto_account",
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "time_slot",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "pick_winner",
+      "discriminator": [
+        227,
+        62,
+        25,
+        73,
+        132,
+        106,
+        68,
+        96
+      ],
+      "accounts": [
+        {
+          "name": "lotto_account",
+          "writable": true
+        },
+        {
+          "name": "winner_wallet",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "time_slot",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "LottoAccount",
+      "discriminator": [
+        190,
+        243,
+        29,
+        116,
+        218,
+        13,
+        234,
+        238
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidPurchaseTime",
+      "msg": "Invalid purchase time."
+    },
+    {
+      "code": 6001,
+      "name": "InvalidResultTime",
+      "msg": "Invalid result time."
+    },
+    {
+      "code": 6002,
+      "name": "AlreadyPurchased",
+      "msg": "This address has already purchased a ticket."
+    },
+    {
+      "code": 6003,
+      "name": "NoParticipants",
+      "msg": "No participants in the lottery."
+    }
+  ],
+  "types": [
+    {
+      "name": "LottoAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "purchased_addresses",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "total_pot",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

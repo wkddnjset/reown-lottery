@@ -41,8 +41,3 @@ tsconfig.tsbuildinfo
 .eslintcache
 
 ## lock file
-
-
-target
-**/*.rs.bk
-test-ledger
