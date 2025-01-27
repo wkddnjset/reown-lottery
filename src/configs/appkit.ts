@@ -1,4 +1,5 @@
 import { SolanaAdapter } from '@reown/appkit-adapter-solana/react'
+import { useAppKitConnection } from '@reown/appkit-adapter-solana/react'
 import { CloudAuthSIWX } from '@reown/appkit-siwx'
 import { solana, solanaDevnet, solanaTestnet } from '@reown/appkit/networks'
 import {
@@ -7,6 +8,7 @@ import {
   useAppKitAccount,
   useAppKitEvents,
   useAppKitNetwork,
+  useAppKitProvider,
   useAppKitState,
   useAppKitTheme,
   useDisconnect,
@@ -62,4 +64,6 @@ export {
   useWalletInfo,
   useAppKitNetwork,
   useDisconnect,
+  useAppKitProvider,
+  useAppKitConnection,
 }

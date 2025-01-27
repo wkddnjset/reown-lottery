@@ -11,7 +11,8 @@
       "@/swagger/*": ["./generated/swagger/*"],
       "@/images": ["./generated/path/images.ts"],
       "@/icons": ["./generated/icons/MyIcons.tsx"],
-      "@/packageJSON": ["../package.json"]
+      "@/packageJSON": ["../package.json"],
+      "@/anchor": ["../anchor/src"]
     },
     "incremental": true,
     "declaration": false,

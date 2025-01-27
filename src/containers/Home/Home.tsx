@@ -30,6 +30,9 @@ function Home() {
             Go to Game Start
           </Button>
         )}
+        <Button onClick={() => router.push('/count')}>
+          Go to Count Example
+        </Button>
       </>
     </Center>
   )
