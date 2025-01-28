@@ -5,6 +5,7 @@ import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
 import { QueryClientProvider } from '@tanstack/react-query'
 
+import AppKitProvider from '@/configs/appkit'
 import { queryClient } from '@/configs/react-query'
 import theme from '@/configs/theme'
 import fonts from '@/configs/theme/foundations/typography/fonts'
@@ -21,7 +22,9 @@ function withAppProvider(AppComponent: FC<AppProps>) {
       <QueryClientProvider client={queryClient}>
         <ChakraProvider resetCSS theme={coveredTheme}>
           <GlobalStoreProvider>
-            <AppComponent {...props} />
+            <AppKitProvider>
+              <AppComponent {...props} />
+            </AppKitProvider>
           </GlobalStoreProvider>
         </ChakraProvider>
       </QueryClientProvider>

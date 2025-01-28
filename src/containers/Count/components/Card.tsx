@@ -10,11 +10,11 @@ import {
 } from '@chakra-ui/react'
 import { PublicKey } from '@solana/web3.js'
 
-import { useCountProgramAccount } from '../hooks/useCountProgramAccount'
+// import { useCountProgramAccount } from '../hooks/useCountProgramAccount'
 
 function Card({ account }: { account: PublicKey }) {
   const {
-    accountQuery,
+    // accountQuery,
     incrementMutation,
     setMutation,
     decrementMutation,
@@ -23,25 +23,27 @@ function Card({ account }: { account: PublicKey }) {
     account,
   })
 
-  const count = useMemo(
-    () => accountQuery.data?.count ?? 0,
-    [accountQuery.data?.count],
-  )
+  //   const count = useMemo(
+  //     () => accountQuery.data?.count ?? 0,
+  //     [accountQuery.data?.count],
+  //   )
+  const count = 0
 
-  if (accountQuery.isLoading) return <Skeleton w="250px" h="214px" />
+  //   if (accountQuery.isLoading)
+  //     return <Skeleton w="250px" h="214px" borderRadius="12px" />
   return (
     <Center
       flexDirection="column"
       p={'20px'}
       border="1px solid"
       borderColor="gray.500"
-      borderRadius="md"
+      borderRadius="12px"
       w="250px"
     >
       <VStack spacing={'12px'}>
         <Text
           textStyle={'pre-heading-01'}
-          onClick={() => accountQuery.refetch()}
+          //   onClick={() => accountQuery.refetch()}
         >
           {count}
         </Text>

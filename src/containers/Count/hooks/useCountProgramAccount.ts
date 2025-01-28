@@ -1,8 +1,7 @@
 import { useToast } from '@chakra-ui/react'
+import { useAppKitNetwork } from '@reown/appkit/react'
 import { PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
-
-import { useAppKitNetwork } from '@/configs/appkit'
 
 import { useCountProgram } from './useCountProgram'
 
@@ -25,7 +24,8 @@ export function useCountProgramAccount({ account }: { account: PublicKey }) {
       status: 'success',
     })
   }
-  const { program, accounts } = useCountProgram()
+  const { program } = useCountProgram()
+  // const { program, accounts } = useCountProgram()
 
   const accountQuery = useQuery({
     queryKey: ['test', 'fetch', { cluster, account }],
@@ -37,7 +37,7 @@ export function useCountProgramAccount({ account }: { account: PublicKey }) {
     mutationFn: () => program.methods.close().accounts({ test: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx as string)
-      return accounts.refetch()
+      // return accounts.refetch()
     },
   })
 

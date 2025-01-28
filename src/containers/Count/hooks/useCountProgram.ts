@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
 
 import { useToast } from '@chakra-ui/react'
-import { useConnection } from '@solana/wallet-adapter-react'
+import { AnchorProvider } from '@coral-xyz/anchor'
+import { useAppKitConnection } from '@reown/appkit-adapter-solana/react'
+import { useAppKitNetwork, useAppKitProvider } from '@reown/appkit/react'
 import { Cluster, Keypair } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { getTestProgram, getTestProgramId } from '@/anchor'
-import { useAppKitNetwork } from '@/configs/appkit'
-import { useAnchorProvider } from '@/hooks/useAnchorProvider'
 
 const NETWORK = {
   'Solana Mainnet': 'mainnet-beta',
@@ -16,13 +16,22 @@ const NETWORK = {
 }
 
 export function useCountProgram() {
-  const { connection } = useConnection()
+  const { connection } = useAppKitConnection()
+
   const { caipNetwork } = useAppKitNetwork()
+  const { walletProvider } = useAppKitProvider<any>('solana')
 
   const cluster = NETWORK[caipNetwork?.name as keyof typeof NETWORK]
 
   const toast = useToast()
-  const provider = useAnchorProvider()
+  const provider = useMemo(
+    () =>
+      new AnchorProvider(connection!, walletProvider, {
+        commitment: 'confirmed',
+      }),
+    [connection, walletProvider],
+  )
+  // const provider = useAnchorProvider()
 
   const programId = useMemo(
     () => getTestProgramId(cluster as Cluster),
@@ -33,14 +42,14 @@ export function useCountProgram() {
     [provider, programId],
   )
 
+  const getProgramAccount = useQuery({
+    queryKey: ['get-program-account', { cluster }],
+    queryFn: () => connection?.getParsedAccountInfo(programId),
+  })
+
   const accounts = useQuery({
     queryKey: ['test', 'all', { cluster }],
     queryFn: () => program.account.test.all(),
-  })
-
-  const getProgramAccount = useQuery({
-    queryKey: ['get-program-account', { cluster }],
-    queryFn: () => connection.getParsedAccountInfo(programId),
   })
 
   const initialize = useMutation({
@@ -48,7 +57,7 @@ export function useCountProgram() {
     mutationFn: (keypair: Keypair) =>
       program.methods
         .initialize()
-        .accounts({ test: keypair.publicKey, payer: provider.publicKey })
+        .accounts({ test: keypair.publicKey })
         .signers([keypair])
         .rpc(),
     onSuccess: (signature) => {
@@ -67,7 +76,7 @@ export function useCountProgram() {
     program,
     programId,
     accounts,
-    getProgramAccount,
     initialize,
+    getProgramAccount,
   }
 }

@@ -2,7 +2,7 @@ import { ComponentProps, ComponentType, useEffect } from 'react'
 
 import { useRouter } from 'next/router'
 
-import { useAppKitAccount } from '@/configs/appkit'
+import { useAppKitAccount } from '@reown/appkit/react'
 
 export default function withAuthGuard<T extends ComponentType<any>>(
   AppComponent: T,

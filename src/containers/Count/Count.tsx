@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import {
   Button,
   Center,
@@ -6,12 +8,12 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { Keypair, PublicKey } from '@solana/web3.js'
-
-import { useAppKitAccount } from '@/configs/appkit'
+import { useAppKitAccount } from '@reown/appkit/react'
+import { Keypair } from '@solana/web3.js'
 
 import Card from './components/Card'
-import { useCountProgram } from './hooks/useCountProgram'
+// import { useCountProgram } from './hooks/useCountProgram'
+import { useCounter } from './hooks/useCounter'
 
 interface CountProps {
   styles?: {
@@ -20,16 +22,23 @@ interface CountProps {
 }
 
 function Count({ styles }: CountProps) {
-  const { initialize, accounts } = useCountProgram()
+  const { getCount, getBalance, incrementCount, initialize } = useCounter()
+  // const { initialize, accounts } = useCountProgram()
   const { address } = useAppKitAccount()
+  const [count, setCount] = useState<number>()
 
-  const createKeypairFromAddress = () => {
-    if (!address) return null
-    const addressBytes = new PublicKey(address).toBytes()
-    return Keypair.fromSeed(addressBytes.slice(0, 32))
-  }
+  useEffect(() => {
+    const fetchCount = async () => {
+      const result = await getCount()
+      const balance = await getBalance()
+      setCount(result)
+      console.log('count', result)
+      console.log('balance', balance)
+    }
+    fetchCount()
+  }, [getCount, getBalance])
 
-  const keypair = createKeypairFromAddress()
+  console.log('count', count)
 
   return (
     <Center {...styles?.container} flexDirection="column">
@@ -38,20 +47,24 @@ function Count({ styles }: CountProps) {
         <Text>
           {address?.slice(0, 4)}...{address?.slice(-4)}
         </Text>
-        <Button
-          onClick={() => initialize.mutateAsync(keypair as Keypair)}
+        <Button onClick={incrementCount}>Increment</Button>
+        <Button onClick={initialize}>Initialize</Button>
+        {/* <Button
+          onClick={() => initialize.mutateAsync(Keypair.generate())}
           isLoading={initialize.isPending}
         >
           Create {initialize.isPending && '...'}
         </Button>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={'10px'}>
-          {accounts.data?.map((account) => (
-            <Card
-              key={account.publicKey.toBase58()}
-              account={account.publicKey}
-            />
-          ))}
-        </SimpleGrid>
+          {accounts.data
+            ?.slice(0, 10)
+            .map((account) => (
+              <Card
+                key={account.publicKey.toBase58()}
+                account={account.publicKey}
+              />
+            ))}
+        </SimpleGrid> */}
       </VStack>
     </Center>
   )

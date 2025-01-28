@@ -1,19 +1,10 @@
+import { type ReactNode } from 'react'
+
 import { SolanaAdapter } from '@reown/appkit-adapter-solana/react'
 import { useAppKitConnection } from '@reown/appkit-adapter-solana/react'
 import { CloudAuthSIWX } from '@reown/appkit-siwx'
 import { solana, solanaDevnet, solanaTestnet } from '@reown/appkit/networks'
-import {
-  createAppKit,
-  useAppKit,
-  useAppKitAccount,
-  useAppKitEvents,
-  useAppKitNetwork,
-  useAppKitProvider,
-  useAppKitState,
-  useAppKitTheme,
-  useDisconnect,
-  useWalletInfo,
-} from '@reown/appkit/react'
+import { createAppKit } from '@reown/appkit/react'
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -21,10 +12,7 @@ import {
 
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID!
 
-// const networks = [solana, solanaTestnet, solanaDevnet]
-
-// Setup solana adapter
-const solanaAdapter = new SolanaAdapter({
+export const solanaAdapter = new SolanaAdapter({
   wallets: [new PhantomWalletAdapter(), new SolflareWalletAdapter()].map(
     (wallet) => wallet as any,
   ),
@@ -38,7 +26,7 @@ const metadata = {
 }
 
 // Create modal
-const modal = createAppKit({
+export const modal = createAppKit({
   adapters: [solanaAdapter],
   networks: [solana, solanaTestnet, solanaDevnet],
   metadata,
@@ -54,16 +42,8 @@ const modal = createAppKit({
   themeMode: 'light',
 })
 
-export {
-  modal,
-  useAppKit,
-  useAppKitState,
-  useAppKitTheme,
-  useAppKitEvents,
-  useAppKitAccount,
-  useWalletInfo,
-  useAppKitNetwork,
-  useDisconnect,
-  useAppKitProvider,
-  useAppKitConnection,
+function AppKitProvider({ children }: { children: ReactNode }) {
+  return children
 }
+
+export default AppKitProvider

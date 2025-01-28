@@ -1,8 +1,7 @@
 import { useRouter } from 'next/router'
 
 import { Button, Center, Text } from '@chakra-ui/react'
-
-import { useAppKit, useAppKitAccount } from '@/configs/appkit'
+import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 
 function Home() {
   const { open } = useAppKit()

@@ -1,70 +1,43 @@
-#![allow(clippy::result_large_err)]
-
 use anchor_lang::prelude::*;
 
-declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
+declare_id!("EWjPhPCSU71Vr8oVgcEqFLS4XYTJfqN9cjSFMxPpwq5L");
 
 #[program]
-pub mod test {
+mod counter {
     use super::*;
 
-  pub fn close(_ctx: Context<CloseTest>) -> Result<()> {
-    Ok(())
-  }
+    pub fn initialize(ctx: Context<Initialize>, start: u64) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.authority = *ctx.accounts.authority.key;
+        counter.count = start;
+        Ok(())
+    }
 
-  pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.test.count = ctx.accounts.test.count.checked_sub(1).unwrap();
-    Ok(())
-  }
-
-  pub fn increment(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.test.count = ctx.accounts.test.count.checked_add(1).unwrap();
-    Ok(())
-  }
-
-  pub fn initialize(_ctx: Context<InitializeTest>) -> Result<()> {
-    Ok(())
-  }
-
-  pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.test.count = value.clone();
-    Ok(())
-  }
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
-pub struct InitializeTest<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
-
-  #[account(
-  init,
-  space = 8 + Test::INIT_SPACE,
-  payer = payer
-  )]
-  pub test: Account<'info, Test>,
-  pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseTest<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
-
-  #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-  )]
-  pub test: Account<'info, Test>,
+pub struct Initialize<'info> {
+    #[account(init, payer = authority, space = 48)]
+    pub counter: Account<'info, Counter>,
+   #[account(mut)]  // authority를 mutable로 설정
+    pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
-pub struct Update<'info> {
-  #[account(mut)]
-  pub test: Account<'info, Test>,
+pub struct Increment<'info> {
+    #[account(mut, has_one = authority)]
+    pub counter: Account<'info, Counter>,
+    pub authority: Signer<'info>,
 }
 
 #[account]
-#[derive(InitSpace)]
-pub struct Test {
-  count: u8,
+pub struct Counter {
+    pub authority: Pubkey,
+    pub count: u64,
 }

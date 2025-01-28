@@ -1,18 +1,19 @@
 import { AnchorProvider } from '@coral-xyz/anchor'
+import { useAppKitConnection } from '@reown/appkit-adapter-solana/react'
+import {
+  useAppKitAccount,
+  useAppKitProvider,
+  useWalletInfo,
+} from '@reown/appkit/react'
 import { AnchorWallet, useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey } from '@solana/web3.js'
 
-import {
-  useAppKitAccount,
-  useAppKitConnection,
-  useAppKitProvider,
-  useWalletInfo,
-} from '@/configs/appkit'
+useAppKitAccount
 
 export function useAnchorProvider() {
   const { connection } = useAppKitConnection()
-  const wallet = useWallet()
-  const { address } = useAppKitAccount()
+  //   const wallet = useWallet()
+  //   const { address } = useAppKitAccount()
   const { walletProvider } = useAppKitProvider<any>('solana')
 
   //    autoConnect: boolean;
