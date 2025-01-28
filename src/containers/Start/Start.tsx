@@ -8,7 +8,10 @@ import {
   Image,
   SimpleGrid,
   Text,
+  VStack,
 } from '@chakra-ui/react'
+
+import Ticket from '@/components/Ticket'
 
 interface StartProps {
   styles?: {
@@ -107,35 +110,13 @@ function Start({ styles }: StartProps) {
         {tickets.length > 0 && (
           <Box w="100%" maxW="360px">
             <Text mb={2}>Selected ({tickets.length} tickets)</Text>
-            {tickets.map((ticket, index) => (
-              <Flex
-                key={index}
-                bg="gray.50"
-                p={2}
-                borderRadius="md"
-                mb={2}
-                justify="center"
-                gap={2}
-              >
-                {ticket.map((num) => (
-                  <Box
-                    key={num}
-                    bg="black"
-                    color="white"
-                    borderRadius="full"
-                    w={'30px'}
-                    h={'30px'}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    fontSize="sm"
-                  >
-                    {num}
-                  </Box>
-                ))}
-              </Flex>
-            ))}
+            <VStack alignItems={'center'} spacing={'8px'}>
+              {tickets.map((ticket, index) => (
+                <Ticket numbers={ticket} key={index} id={index + 1} />
+              ))}
+            </VStack>
             <Button
+              mt={'20px'}
               colorScheme="green"
               w="100%"
               onClick={handlePurchaseTickets}

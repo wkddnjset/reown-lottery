@@ -18,7 +18,7 @@ describe('counter', () => {
     await program.methods
       .initialize(new BN(42))
       .accounts({
-        counter: testKeypair.publicKey,
+        // counter: testKeypair.publicKey,
         authority: payer.publicKey,
       })
       .signers([testKeypair])

@@ -1,7 +1,6 @@
 import { type ReactNode } from 'react'
 
 import { SolanaAdapter } from '@reown/appkit-adapter-solana/react'
-import { useAppKitConnection } from '@reown/appkit-adapter-solana/react'
 import { CloudAuthSIWX } from '@reown/appkit-siwx'
 import { solana, solanaDevnet, solanaTestnet } from '@reown/appkit/networks'
 import { createAppKit } from '@reown/appkit/react'
@@ -37,7 +36,7 @@ export const modal = createAppKit({
     emailShowWallets: true, // default to true
     onramp: false, // Optional - true by default
   },
-  //   siwx: new CloudAuthSIWX(),
+  siwx: new CloudAuthSIWX(),
   projectId,
   themeMode: 'dark',
 })

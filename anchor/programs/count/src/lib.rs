@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("EWjPhPCSU71Vr8oVgcEqFLS4XYTJfqN9cjSFMxPpwq5L");
+declare_id!("5YDWBVvQXAcTepEQc59vfcc3X44xDk1y25YBJ62vYYQr");
 
 #[program]
 mod counter {
@@ -22,9 +22,9 @@ mod counter {
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init, payer = authority, space = 48)]
+    #[account(init, payer = authority, space = 48, seeds = [b"counter", authority.key().as_ref()], bump)]
     pub counter: Account<'info, Counter>,
-   #[account(mut)]  // authority를 mutable로 설정
+    #[account(mut)]
     pub authority: Signer<'info>,
     pub system_program: Program<'info, System>,
 }

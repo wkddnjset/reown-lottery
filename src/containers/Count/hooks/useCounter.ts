@@ -1,18 +1,13 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useToast } from '@chakra-ui/react'
-import { AnchorProvider, BN, Wallet } from '@coral-xyz/anchor'
-import { useAppKitConnection } from '@reown/appkit-adapter-solana/react'
-import type { Provider } from '@reown/appkit-adapter-solana/react'
-import {
-  useAppKitAccount,
-  useAppKitNetwork,
-  useAppKitProvider,
-} from '@reown/appkit/react'
-import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react'
-import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
+import { BN } from '@coral-xyz/anchor'
+import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react'
+import { Cluster, PublicKey } from '@solana/web3.js'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { getCountProgram, getCountProgramId } from '@/anchor'
+import { useAnchorProvider } from '@/hooks/useAnchorProvider'
 
 const NETWORK = {
   'Solana Mainnet': 'mainnet-beta',
@@ -21,102 +16,94 @@ const NETWORK = {
 }
 
 export const useCounter = () => {
-  const { isConnected, address } = useAppKitAccount()
-  const wallet = useAnchorWallet()
-  const { connection } = useAppKitConnection()
+  const [countAddress, setCountAddress] = useState<any>()
+  const toast = useToast()
+  const { address } = useAppKitAccount()
   const { caipNetwork } = useAppKitNetwork()
-  const { walletProvider } = useAppKitProvider<Provider>('solana')
-
   const cluster = NETWORK[caipNetwork?.name as keyof typeof NETWORK]
 
-  //   const program = getCountProgram(provider, programId)
+  const provider = useAnchorProvider()
+  const programId = useMemo(
+    () => getCountProgramId(cluster as Cluster),
+    [cluster],
+  )
+  const program = useMemo(
+    () => getCountProgram(provider, programId),
+    [provider, programId],
+  )
 
-  const program = useMemo(() => {
-    if (connection) {
-      const programId = getCountProgramId(cluster as Cluster)
-      //   const programId = new PublicKey(
-      //     'coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF',
-      //   )
-      const provider = new AnchorProvider(connection, walletProvider as any, {
-        commitment: 'processed',
-      })
-      return getCountProgram(provider, programId)
+  useEffect(() => {
+    const updateState = async () => {
+      if (!countAddress && address) {
+        const [counterPDA] = await PublicKey.findProgramAddress(
+          [Buffer.from('counter'), new PublicKey(address).toBuffer()],
+          programId,
+        )
+        setCountAddress(counterPDA.toBase58())
+      }
     }
-  }, [connection, walletProvider, cluster])
+    updateState()
+  }, [address, programId, countAddress])
 
-  const initialize = async () => {
-    if (!connection || !program) return
-
-    const wallet = new PublicKey(address as string) // User wallet
-    const newAccountKp = Keypair.generate()
-
-    // Send transaction
-    const data = new BN(42)
-    const txHash = await program.methods
-      .initialize(data)
-      .accounts({
-        counter: newAccountKp.publicKey,
-        authority: wallet,
-      })
-      .signers([newAccountKp])
-      .rpc()
-    console.log(`Use 'solana confirm -v ${txHash}' to see the logs`)
-
-    // Confirm transaction
-    await connection.confirmTransaction(txHash)
-  }
-
-  const getCount = async () => {
-    if (!program) return
-    let count = 0
-    console.log('programId', program.programId.toBase58())
-    const counterPDA = await PublicKey.findProgramAddress(
-      [Buffer.from('counter')],
-      program.programId,
-    )
-    console.log('counterPDA', counterPDA[0].toBase58())
-
-    try {
-      const counterAccount = await program.account.counter.fetch(counterPDA[0])
-      console.log('counterAccount', counterAccount)
-      count = counterAccount.count.toNumber()
-    } catch (err) {
-      console.error('Failed to fetch count:', err)
-    }
-    return count
-  }
-
-  const incrementCount = async () => {
-    if (!program) return
-
-    const counterPDA = await PublicKey.findProgramAddress(
-      [Buffer.from('counter')],
-      program.programId,
-    )
-
-    try {
-      await program.methods
-        .increment()
+  const initialize = useMutation({
+    mutationKey: ['test', 'initialize', { cluster }],
+    mutationFn: () =>
+      program.methods
+        .initialize(new BN(0))
         .accounts({
-          counter: counterPDA[0],
+          //   counter: countAddress,
+          authority: address,
         })
-        .rpc()
-      getCount() // Refresh count after increment
-    } catch (err) {
-      console.error('Failed to increment count:', err)
-    }
+        .rpc(),
+    onSuccess: (signature) => {
+      toast({
+        title: 'Transaction successful',
+        description: signature,
+        status: 'success',
+      })
+    },
+    onError: (error) =>
+      toast({
+        title: 'Failed to initialize account',
+        description: error.message,
+        status: 'error',
+      }),
+  })
+
+  const incrementCount = useMutation({
+    mutationFn: () =>
+      program.methods.increment().accounts({ counter: countAddress }).rpc(),
+    onSuccess: (signature) => {
+      toast({
+        title: 'Transaction successful',
+        description: signature,
+        status: 'success',
+      })
+    },
+    onError: (error) =>
+      toast({
+        title: 'Failed to increment count',
+        description: error.message,
+        status: 'error',
+      }),
+    onSettled: () => {
+      console.log('onSettled')
+      getCount.refetch()
+    },
+  })
+
+  const getCount = useQuery({
+    queryKey: ['count', { cluster }],
+    queryFn: () => program.account.counter.fetch(countAddress),
+  })
+
+  return {
+    program,
+    programId,
+    initialize,
+    incrementCount,
+    getCount,
   }
-
-  const getBalance = async () => {
-    if (!address) return
-    const wallet = new PublicKey(address as string)
-    const balance = await connection?.getBalance(wallet) // get the amount in LAMPORTS
-
-    // console.log(`${balance / LAMPORTS_PER_SOL} SOL`)
-    return balance
-  }
-
-  return { getCount, getBalance, incrementCount, initialize }
 }
 
 export default useCounter

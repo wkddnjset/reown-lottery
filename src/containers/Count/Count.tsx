@@ -13,33 +13,22 @@ interface CountProps {
 }
 
 function Count({ styles }: CountProps) {
-  const { getCount, getBalance, incrementCount, initialize } = useCounter()
-  // const { initialize, accounts } = useCountProgram()
+  const { initialize, incrementCount, getCount } = useCounter()
   const { address } = useAppKitAccount()
-  const [count, setCount] = useState<number>()
-
-  useEffect(() => {
-    const fetchCount = async () => {
-      const result = await getCount()
-      const balance = await getBalance()
-      setCount(result)
-      console.log('count', result)
-      console.log('balance', balance)
-    }
-    fetchCount()
-  }, [getCount, getBalance])
-
-  console.log('count', count)
+  const { data: countData } = getCount
+  const count = countData?.count.toNumber()
 
   return (
-    <Center {...styles?.container} flexDirection="column">
+    <Center {...styles?.container} flexDirection="column" pt={'100px'}>
       <VStack spacing={'12px'}>
         <Text textStyle={'pre-heading-01'}>Counter</Text>
         <Text>
           {address?.slice(0, 4)}...{address?.slice(-4)}
         </Text>
-        <Button onClick={incrementCount}>Increment</Button>
-        <Button onClick={initialize}>Initialize</Button>
+
+        <Text textStyle={'pre-display-01'}>{count}</Text>
+        <Button onClick={() => incrementCount.mutate()}>Increment</Button>
+        <Button onClick={() => initialize.mutate()}>Initialize</Button>
       </VStack>
     </Center>
   )
