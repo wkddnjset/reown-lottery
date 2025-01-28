@@ -143,12 +143,18 @@ function Home() {
         opacity={0}
         transform={'translateY(30px)'}
       >
-        <Button onClick={() => router.push('/count')}>TEST</Button>
+        <Button
+          onClick={() => router.push('/count')}
+          size={'lg'}
+          w={'280px'}
+          variant={'outline-primary'}
+        >
+          Counter Example
+        </Button>
         <Button
           onClick={() => open({ view: 'Networks' })}
           size={'lg'}
           w={'280px'}
-          variant={'outline-primary'}
         >
           Change Network
         </Button>
@@ -157,6 +163,7 @@ function Home() {
             onClick={() => router.push('/tickets')}
             size={'lg'}
             w={'280px'}
+            variant={'outline-primary'}
           >
             Check My Tickets
           </Button>
