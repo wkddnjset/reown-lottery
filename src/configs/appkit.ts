@@ -36,7 +36,7 @@ export const modal = createAppKit({
     emailShowWallets: true, // default to true
     onramp: false, // Optional - true by default
   },
-  siwx: new CloudAuthSIWX(),
+  //   siwx: new CloudAuthSIWX(),
   projectId,
   themeMode: 'dark',
 })

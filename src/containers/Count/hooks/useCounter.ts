@@ -2,27 +2,19 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useToast } from '@chakra-ui/react'
 import { BN } from '@coral-xyz/anchor'
-import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react'
+import { useAppKitAccount } from '@reown/appkit/react'
 import { Cluster, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { getCountProgram, getCountProgramId } from '@/anchor'
 import { useAnchorProvider } from '@/hooks/useAnchorProvider'
 
-const NETWORK = {
-  'Solana Mainnet': 'mainnet-beta',
-  'Solana Testnet': 'testnet',
-  'Solana Devnet': 'devnet',
-}
-
 export const useCounter = () => {
   const [countAddress, setCountAddress] = useState<any>()
   const toast = useToast()
   const { address } = useAppKitAccount()
-  const { caipNetwork } = useAppKitNetwork()
-  const cluster = NETWORK[caipNetwork?.name as keyof typeof NETWORK]
 
-  const provider = useAnchorProvider()
+  const { provider, cluster } = useAnchorProvider()
   const programId = useMemo(
     () => getCountProgramId(cluster as Cluster),
     [cluster],
@@ -79,6 +71,7 @@ export const useCounter = () => {
         description: signature,
         status: 'success',
       })
+      getCount.refetch()
     },
     onError: (error) =>
       toast({
@@ -86,10 +79,6 @@ export const useCounter = () => {
         description: error.message,
         status: 'error',
       }),
-    onSettled: () => {
-      console.log('onSettled')
-      getCount.refetch()
-    },
   })
 
   const getCount = useQuery({
