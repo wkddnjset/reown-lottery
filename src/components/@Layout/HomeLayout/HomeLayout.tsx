@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import {
+  Box,
   ContainerProps,
   Grid,
   GridItem,
@@ -10,7 +11,6 @@ import {
 
 import { LAYOUT } from '@/constants/layout'
 
-import HomeFooter from './components/HomeFooter'
 import HomeHeader from './components/HomeHeader'
 
 interface HomeLayoutProps {
@@ -28,7 +28,6 @@ const bounceAnimation = keyframes`
 const HomeLayout = ({
   //
   header = <HomeHeader />,
-  footer = <HomeFooter />,
   containerProps,
   content,
 }: HomeLayoutProps) => {
@@ -68,7 +67,7 @@ const HomeLayout = ({
       minH={'100vh'}
       pos={'relative'}
       gridAutoColumns={'1fr'}
-      gridTemplateRows={`${LAYOUT.HEADER.HEIGHT} 1fr auto`}
+      gridTemplateRows={`${0} 1fr auto`}
       templateAreas={`"header" "main" "footer"`}
     >
       <GridItem
@@ -89,12 +88,20 @@ const HomeLayout = ({
         area={'main'}
         w={'100%'}
         minW={'100%'}
+        pos={'relative'}
         {...containerProps}
       >
         {content}
-      </GridItem>
-      <GridItem area={'footer'} as={'footer'} h={'100%'} w={'100%'} py={'30px'}>
-        {footer}
+        <Box
+          backgroundImage={'images/bg.png'}
+          backgroundSize={'cover'}
+          backgroundPosition={'center'}
+          pos={'fixed'}
+          top={'0'}
+          w={'100vw'}
+          h={'100vh'}
+          zIndex={'-1'}
+        />
       </GridItem>
     </Grid>
   )

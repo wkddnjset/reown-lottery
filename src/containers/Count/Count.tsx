@@ -1,17 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import {
-  Button,
-  Center,
-  ChakraProps,
-  SimpleGrid,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+import { Button, Center, ChakraProps, Text, VStack } from '@chakra-ui/react'
 import { useAppKitAccount } from '@reown/appkit/react'
-import { Keypair } from '@solana/web3.js'
 
-import Card from './components/Card'
 // import { useCountProgram } from './hooks/useCountProgram'
 import { useCounter } from './hooks/useCounter'
 
@@ -49,22 +40,6 @@ function Count({ styles }: CountProps) {
         </Text>
         <Button onClick={incrementCount}>Increment</Button>
         <Button onClick={initialize}>Initialize</Button>
-        {/* <Button
-          onClick={() => initialize.mutateAsync(Keypair.generate())}
-          isLoading={initialize.isPending}
-        >
-          Create {initialize.isPending && '...'}
-        </Button>
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={'10px'}>
-          {accounts.data
-            ?.slice(0, 10)
-            .map((account) => (
-              <Card
-                key={account.publicKey.toBase58()}
-                account={account.publicKey}
-              />
-            ))}
-        </SimpleGrid> */}
       </VStack>
     </Center>
   )

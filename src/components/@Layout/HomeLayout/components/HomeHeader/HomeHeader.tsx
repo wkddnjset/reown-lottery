@@ -5,6 +5,7 @@ import {
   ContainerProps,
   HStack,
   Spinner,
+  Text,
 } from '@chakra-ui/react'
 
 import { LogoIcon } from 'generated/icons/MyIcons'
@@ -24,30 +25,21 @@ const HomeHeader = ({ ...props }: ContainerProps) => {
       w={'100%'}
       alignItems={'center'}
       justifyContent="space-between"
+      borderBottom={'1px solid'}
+      borderColor={'content.1'}
+      backdropFilter={'blur(10px)'}
+      // pr={'5px'}
       {...props}
     >
       <Link variant={'unstyled'} href={ROUTES.MAIN}>
-        <LogoIcon boxSize={'74px'} color={'content.1'} />
+        <Text
+          color={'content.7'}
+          textStyle={'pre-heading-02'}
+        >{`12'Lottery`}</Text>
       </Link>
       <HStack spacing="16px">
         <ClientOnly fallback={<Spinner size={'sm'} />}>
-          {isLogin ?
-            <Button
-              variant={'line'}
-              size={'sm'}
-              onClick={() => resetToken('token')}
-            >
-              Logout
-            </Button>
-          : <Link
-              color={'content.1'}
-              variant={'line'}
-              size={'sm'}
-              href={ROUTES.LOGIN_MAIN}
-            >
-              Login
-            </Link>
-          }
+          <appkit-button />
         </ClientOnly>
       </HStack>
     </Container>

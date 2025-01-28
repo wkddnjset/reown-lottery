@@ -26,7 +26,7 @@ export const textStyles = {
     textDecoration: 'none',
     fontWeight: 700,
     fontSize: {
-      base: '40px',
+      base: '50px',
       sm: '56px',
       md: '64px',
     },

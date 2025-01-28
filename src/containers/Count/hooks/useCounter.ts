@@ -10,13 +10,7 @@ import {
   useAppKitProvider,
 } from '@reown/appkit/react'
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react'
-import {
-  Cluster,
-  Keypair,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-} from '@solana/web3.js'
+import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
 
 import { getCountProgram, getCountProgramId } from '@/anchor'
 
@@ -43,7 +37,7 @@ export const useCounter = () => {
       //   const programId = new PublicKey(
       //     'coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF',
       //   )
-      const provider = new AnchorProvider(connection, walletProvider, {
+      const provider = new AnchorProvider(connection, walletProvider as any, {
         commitment: 'processed',
       })
       return getCountProgram(provider, programId)
@@ -63,7 +57,6 @@ export const useCounter = () => {
       .accounts({
         counter: newAccountKp.publicKey,
         authority: wallet,
-        system_program: SystemProgram.programId,
       })
       .signers([newAccountKp])
       .rpc()

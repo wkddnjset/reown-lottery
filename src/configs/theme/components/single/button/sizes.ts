@@ -16,7 +16,7 @@ export const sizes = {
 
     return {
       p: `${py} ${pr} ${py} ${pl}`,
-      borderRadius: '10px',
+      borderRadius: 'full',
       ...textStyles['pre-heading-05'],
     }
   }),
@@ -27,7 +27,7 @@ export const sizes = {
 
     return {
       p: `${py} ${pr} ${py} ${pl}`,
-      borderRadius: '8px',
+      borderRadius: 'full',
       ...textStyles['pre-heading-05'],
     }
   }),
@@ -38,7 +38,7 @@ export const sizes = {
 
     return {
       p: `${py} ${pr} ${py} ${pl}`,
-      borderRadius: '6px',
+      borderRadius: 'full',
       ...textStyles['pre-body-05'],
     }
   }),

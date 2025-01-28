@@ -39,7 +39,7 @@ export const modal = createAppKit({
   },
   //   siwx: new CloudAuthSIWX(),
   projectId,
-  themeMode: 'light',
+  themeMode: 'dark',
 })
 
 function AppKitProvider({ children }: { children: ReactNode }) {

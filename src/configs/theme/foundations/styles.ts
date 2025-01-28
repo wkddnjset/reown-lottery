@@ -1,8 +1,8 @@
 const styles = {
   global: () => ({
     body: {
-      bg: 'background.basic.1',
-      color: 'content.1',
+      bg: '#000',
+      color: '#fff',
     },
     '#__next': {},
   }),

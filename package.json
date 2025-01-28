@@ -50,6 +50,7 @@
     "chakra-react-select": "^4.8.0",
     "dayjs": "^1.11.11",
     "framer-motion": "^11.2.10",
+    "gsap": "^3.12.7",
     "immer": "^10.1.1",
     "lodash": "^4.17.21",
     "next": "^14.2.4",
