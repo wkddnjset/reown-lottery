@@ -7,9 +7,7 @@ import withAuthGuard from '@/hocs/withAuthGuard'
 function StartPage() {
   return (
     <>
-      {/* output: 똑똑한개발자 |  */}
-      {/* titleTemplate는 /configs/seo/config.ts에서 변경 가능합니다. */}
-      <NextSeo title="start" />
+      <NextSeo title="BUY TICKET" />
       <HomeLayout content={<Start />} />
     </>
   )
