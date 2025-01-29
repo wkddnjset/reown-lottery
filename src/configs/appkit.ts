@@ -24,7 +24,7 @@ const metadata = {
   name: 'reown-lottery',
   description: 'AppKit Example',
   url: 'https://reown-lottery.vercel.app', // origin must match your domain & subdomain
-  icons: ['https://assets.reown.com/reown-profile-pic.png'],
+  icons: ['https://reown-lottery.vercel.app/images/512.png'],
 }
 
 // Create modal

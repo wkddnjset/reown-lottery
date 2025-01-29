@@ -6,7 +6,7 @@ pub mod helpers;
 use self::helpers::*;
 
 
-declare_id!("Bx9VQTiKcL3bgY1cnKs4bMgs2xR6UG7fNtKciRTU1iQH");
+declare_id!("DyFeDEpHvSZ3GabLjyKR2wQ1jfxV6G4ZVS2tu4waPjFg");
 
 // 상수 정의
 pub const TICKET_PRICE: u64 = 10_000_000; // 0.01 SOL
