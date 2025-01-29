@@ -9,12 +9,16 @@ interface AdminProps {
 }
 
 function Admin({ styles }: AdminProps) {
-  const { initialize, getTickets } = useLottery()
+  const { initialize, getLottery } = useLottery()
   const POOL_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_POOL_ADDRESS
   const DEV_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_DEV_ADDRESS
   const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_ADMIN_ADDRESS
-  const { data } = getTickets
-  console.log('getLottery:', data)
+  const { data } = getLottery
+
+  const drawLottery = () => {
+    console.log('drawLottery')
+  }
+
   return (
     <Flex
       {...styles?.container}
@@ -63,16 +67,9 @@ function Admin({ styles }: AdminProps) {
           </Button>
         }
 
-        {/* <Button
-          mt={'10px'}
-          size={'lg'}
-          w={'280px'}
-          onClick={() => {
-            createLottery.mutate()
-          }}
-        >
-          Get Lottery Account
-        </Button> */}
+        <Button mt={'10px'} size={'lg'} w={'280px'} onClick={drawLottery}>
+          Draw Lottery
+        </Button>
       </Flex>
     </Flex>
   )

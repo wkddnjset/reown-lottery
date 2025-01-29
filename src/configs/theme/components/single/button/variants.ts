@@ -53,6 +53,16 @@ const solidPrimary = defineVariant({
   disabled: { color: 'content.5', bgColor: 'background.basic.4' },
 })
 
+const solidDelete = defineVariant({
+  basic: {
+    bgColor: 'red.500',
+    color: 'content.8',
+  },
+  hover: { bgColor: 'red.600' },
+  active: { bgColor: 'red.700' },
+  disabled: { color: 'content.5', bgColor: 'background.basic.4' },
+})
+
 const outlinePrimary = defineVariant({
   basic: {
     color: 'primary.3',
@@ -125,6 +135,7 @@ const textSecondary = defineVariant({
 })
 
 export const variants = {
+  'solid-delete': solidDelete,
   'solid-primary': solidPrimary,
   'outline-primary': outlinePrimary,
   'outline-secondary': outlineSecondary,

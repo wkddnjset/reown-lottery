@@ -10,11 +10,11 @@ const NETWORK = {
 }
 
 export function useAnchorProvider() {
-  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
   const { walletProvider } = useAppKitProvider<any>('solana')
 
   const { caipNetwork } = useAppKitNetwork()
   const cluster = NETWORK[caipNetwork?.name as keyof typeof NETWORK]
+  const connection = new Connection(clusterApiUrl(cluster as any), 'confirmed')
 
   const provider = new AnchorProvider(
     connection,
@@ -23,5 +23,5 @@ export function useAnchorProvider() {
       commitment: 'confirmed',
     },
   )
-  return { provider, cluster }
+  return { provider, cluster, connection }
 }

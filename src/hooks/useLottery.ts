@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useToast } from '@chakra-ui/react'
 import { BN } from '@coral-xyz/anchor'
 import { useAppKitAccount } from '@reown/appkit/react'
-import { Cluster, PublicKey } from '@solana/web3.js'
+import { Cluster, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { getLotteryProgram, getLotteryProgramId } from '@/anchor'
@@ -34,7 +34,7 @@ export const useLottery = () => {
       if (address) {
         if (!lotteryAddress) {
           const [lotteryPDA] = await PublicKey.findProgramAddress(
-            [Buffer.from('lottery'), new PublicKey(address).toBuffer()],
+            [Buffer.from('lottery'), new PublicKey(DEV_ADDRESS).toBuffer()],
             programId,
           )
           setLotteryAddress(lotteryPDA.toBase58())
@@ -44,7 +44,7 @@ export const useLottery = () => {
             [
               Buffer.from('ticket'),
               new PublicKey(lotteryAddress).toBuffer(),
-              new PublicKey(address).toBuffer(),
+              new PublicKey(DEV_ADDRESS).toBuffer(),
             ],
             programId,
           )
@@ -59,14 +59,7 @@ export const useLottery = () => {
     mutationKey: ['test', 'initialize', { cluster }],
     mutationFn: () => {
       const now = new Date()
-      const utcHours = now.getUTCHours()
-
-      const targetHour = utcHours >= 12 ? 24 : 12
-
-      const target = new Date(now)
-      target.setUTCHours(targetHour, 0, 0, 0)
-
-      const nextDrawTime = Math.floor(target.getTime() / 1000) + 3600 * 12 // 12시간 후
+      const nextDrawTime = Math.floor(now.getTime() / 1000) + 3600 // 1시간 후
 
       return program.methods
         .initializeLottery(new BN(nextDrawTime))
@@ -94,25 +87,20 @@ export const useLottery = () => {
     },
   })
 
-  const purchase = useMutation({
+  const purchaseTickets = useMutation({
     mutationKey: ['test', 'purchase', { cluster }],
-    mutationFn: (tickets: [number, number, number, number][]) => {
+    mutationFn: async (tickets: [number, number, number, number][]) => {
       console.log('Purchase Ticket:', tickets)
+      if (!address) return
+
       return program.methods
         .purchaseTickets(tickets)
         .accounts({
           lottery: new PublicKey(lotteryAddress),
-          user: address,
-          pool: POOL_ADDRESS,
+          user: new PublicKey(address),
+          pool: new PublicKey(POOL_ADDRESS),
         })
         .rpc()
-    },
-    onSuccess: (signature) => {
-      toast({
-        title: 'Transaction successful',
-        description: signature,
-        status: 'success',
-      })
     },
     onError: (error) =>
       toast({
@@ -120,10 +108,44 @@ export const useLottery = () => {
         description: error.message,
         status: 'error',
       }),
+    onSuccess: (signature) => {
+      toast({
+        title: 'Transaction successful',
+        description: `tx: ${signature}`,
+        status: 'success',
+      })
+    },
   })
 
-  const getTickets = useQuery({
-    queryKey: ['test', 'getTickets', { cluster }],
+  // const getMyTickets = useMutation({
+  //   mutationKey: ['test', 'getMyTickets', { cluster }],
+  //   mutationFn: async () => {
+  //     if (!address) return
+  //     return program.methods
+  //       .getTickets()
+  //       .accounts({
+  //         lottery: new PublicKey(lotteryAddress),
+  //         user: new PublicKey(address),
+  //       })
+  //       .rpc()
+  //   },
+  //   onError: (error) =>
+  //     toast({
+  //       title: 'Failed to purchase ticket',
+  //       description: error.message,
+  //       status: 'error',
+  //     }),
+  //   onSuccess: (signature) => {
+  //     toast({
+  //       title: 'Transaction successful',
+  //       description: `tx: ${signature}`,
+  //       status: 'success',
+  //     })
+  //   },
+  // })
+
+  const getLottery = useQuery({
+    queryKey: ['test', 'getLottery', { cluster }],
     queryFn: () => {
       return program.account.lottery.fetch(lotteryAddress)
     },
@@ -132,9 +154,9 @@ export const useLottery = () => {
   return {
     program,
     programId,
-    purchase,
+    purchaseTickets,
     initialize,
-    getTickets,
+    getLottery,
   }
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
@@ -17,10 +17,15 @@ import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 import gsap from 'gsap'
 
 import Countdown from './components/Countdown'
+import usePool from './hooks/usePool'
 
 function Home() {
+  const [balance, setBalance] = useState<number>(0)
+
   const { open } = useAppKit()
   const { isConnected } = useAppKitAccount()
+  const { getBalance } = usePool()
+
   const router = useRouter()
 
   const countdownRef = useRef(null)
@@ -73,6 +78,15 @@ function Home() {
       clearTimeout(timer)
     }
   }, [])
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const result = await getBalance()
+      setBalance(result || 0)
+    }
+    fetchBalance()
+  }, [getBalance])
+
   return (
     <Center
       h={'100%'}
@@ -111,7 +125,7 @@ function Home() {
               Total Reward
             </Text>
             <Text textStyle={'pre-display-02'} lineHeight={'1'}>
-              {Number(100000).toLocaleString()}
+              {balance ? Number(balance).toFixed(4) : 0}
             </Text>
             <Text textStyle={'pre-caption-01'} color={'content.5'} mt={'5px'}>
               SOL
@@ -144,14 +158,6 @@ function Home() {
         transform={'translateY(30px)'}
       >
         <Button
-          onClick={() => router.push('/count')}
-          size={'lg'}
-          w={'280px'}
-          variant={'outline-primary'}
-        >
-          Counter Example
-        </Button>
-        <Button
           onClick={() => open({ view: 'Networks' })}
           size={'lg'}
           w={'280px'}
@@ -165,7 +171,7 @@ function Home() {
             w={'280px'}
             variant={'outline-primary'}
           >
-            Check My Tickets
+            My Tickets
           </Button>
         )}
         <Button onClick={() => router.push('/start')} size={'lg'} w={'280px'}>

@@ -1,5 +1,5 @@
 {
-  "address": "2THy5cGocSyxCfV2dBbXLg8CcSUYBFJ4fkDnTyiVWeB4",
+  "address": "pZWobzWKfjoG9QkKXfYvYTjgBQSMRP6Trqc897nUzUa",
   "metadata": {
     "name": "lottery",
     "version": "0.1.0",
@@ -188,30 +188,14 @@
       "code": 6004,
       "name": "Unauthorized",
       "msg": "Unauthorized access."
+    },
+    {
+      "code": 6005,
+      "name": "DrawNotAllowed",
+      "msg": "Draw is not allowed at this time."
     }
   ],
   "types": [
-    {
-      "name": "DrawResult",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "draw_time",
-            "type": "i64"
-          },
-          {
-            "name": "winning_numbers",
-            "type": {
-              "array": [
-                "u8",
-                4
-              ]
-            }
-          }
-        ]
-      }
-    },
     {
       "name": "Lottery",
       "type": {
@@ -228,15 +212,19 @@
             }
           },
           {
+            "name": "current_round",
+            "type": "u64"
+          },
+          {
             "name": "draw_time",
             "type": "i64"
           },
           {
-            "name": "past_draws",
+            "name": "past_rounds",
             "type": {
               "vec": {
                 "defined": {
-                  "name": "DrawResult"
+                  "name": "PastRound"
                 }
               }
             }
@@ -252,6 +240,47 @@
           {
             "name": "admin",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PastRound",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "winner",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Winner"
+                }
+              }
+            }
+          },
+          {
+            "name": "winning_numbers",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          },
+          {
+            "name": "user_tickets",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Ticket"
+                }
+              }
+            }
           }
         ]
       }
@@ -277,6 +306,26 @@
           {
             "name": "timestamp",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Winner",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "prize",
+            "type": "u64"
+          },
+          {
+            "name": "rank",
+            "type": "u8"
           }
         ]
       }

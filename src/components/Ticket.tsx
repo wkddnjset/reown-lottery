@@ -42,6 +42,8 @@ const Ticket = ({
                 alignItems="center"
                 justifyContent="center"
                 fontSize="sm"
+                border={'1px solid'}
+                borderColor={'gray.700'}
               >
                 {num}
               </Box>

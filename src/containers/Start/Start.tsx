@@ -1,14 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+import { useRouter } from 'next/router'
 
 import {
+  Badge,
   Box,
   Button,
+  Center,
   ChakraProps,
   Flex,
+  IconButton,
   SimpleGrid,
   Text,
   VStack,
 } from '@chakra-ui/react'
+
+import gsap from 'gsap'
+import { FaRegTrashCan } from 'react-icons/fa6'
 
 import Ticket from '@/components/Ticket'
 import useLottery from '@/hooks/useLottery'
@@ -23,7 +31,52 @@ function Start({ styles }: StartProps) {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
   const [tickets, setTickets] = useState<[number, number, number, number][]>([])
 
-  const { purchase } = useLottery()
+  const { purchaseTickets } = useLottery()
+  const router = useRouter()
+
+  const ticketRef = useRef(null)
+  const calendarRef = useRef(null)
+  const btnRef = useRef(null)
+
+  useEffect(() => {
+    // 0.5초 지연을 위한 타임아웃 설정
+    const timer = setTimeout(() => {
+      const timeline = gsap.timeline({
+        defaults: { duration: 0.6, ease: 'power3.out' },
+      })
+
+      const ctx = gsap.context(() => {
+        timeline
+          .to(ticketRef.current, {
+            opacity: 1,
+            y: 0,
+          })
+          .to(
+            btnRef.current,
+            {
+              opacity: 1,
+              y: 0,
+            },
+            '-=0.3',
+          )
+          .to(
+            calendarRef.current,
+            {
+              opacity: 1,
+              y: 0,
+            },
+            '-=0.3',
+          )
+      })
+
+      return () => {
+        ctx.revert()
+      }
+    }, 500)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [])
 
   const handleNumberClick = (num: number) => {
     if (selectedNumbers.includes(num)) {
@@ -33,6 +86,10 @@ function Start({ styles }: StartProps) {
     } else {
       setSelectedNumbers([num])
     }
+  }
+
+  const handleDeleteTicket = (index: number) => {
+    setTickets((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleQuickPick = () => {
@@ -64,16 +121,38 @@ function Start({ styles }: StartProps) {
     if (tickets.length > 0) {
       // 여기에 티켓 구매 API 호출 로직 추가
       console.log('구매할 티켓들:', tickets)
-      await purchase.mutateAsync(tickets)
-      // setTickets([])
+      await purchaseTickets.mutateAsync(tickets, {
+        onSuccess: () => {
+          setTickets([])
+        },
+      })
     }
   }
-
   return (
-    <Box {...styles?.container} pt={'80px'}>
-      <Flex direction="column" align="center" gap={4} mt={'20px'}>
-        <Ticket numbers={selectedNumbers} />
-        <Box bg={'gray.50'} borderRadius={'12px'} p={'12px'}>
+    <Box {...styles?.container} py={'80px'}>
+      <Flex direction="column" align="center" gap={'12px'} mt={'20px'}>
+        <Box ref={ticketRef} opacity={0} transform={'translateY(30px)'}>
+          <Ticket numbers={selectedNumbers} />
+        </Box>
+        <Box ref={btnRef} opacity={0} transform={'translateY(30px)'}>
+          <Button
+            maxW="300px"
+            w="100%"
+            variant={'outline-primary'}
+            onClick={() => router.push('/tickets')}
+          >
+            My Tickets
+          </Button>
+        </Box>
+
+        <Box
+          bg={'gray.50'}
+          borderRadius={'12px'}
+          p={'12px'}
+          ref={calendarRef}
+          opacity={0}
+          transform={'translateY(30px)'}
+        >
           <SimpleGrid columns={6} spacing={2} mb={4}>
             {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
               <Button
@@ -106,17 +185,29 @@ function Start({ styles }: StartProps) {
         </Box>
         {tickets.length > 0 && (
           <Box w="100%" maxW="360px">
-            <Text mb={2}>Selected ({tickets.length} tickets)</Text>
+            <Badge size={'lg'} mb={'10px'}>
+              <Text># Selected ({tickets.length} tickets)</Text>
+            </Badge>
             <VStack alignItems={'center'} spacing={'8px'}>
               {tickets.map((ticket, index) => (
-                <Ticket numbers={ticket} key={index} id={index + 1} />
+                <Flex key={index} gap={'10px'}>
+                  <Ticket numbers={ticket} key={index} id={index + 1} />
+                  <Center>
+                    <IconButton
+                      aria-label="delete"
+                      size={'sm'}
+                      variant={'solid-delete'}
+                      icon={<FaRegTrashCan />}
+                      onClick={() => handleDeleteTicket(index)}
+                    />
+                  </Center>
+                </Flex>
               ))}
             </VStack>
             <Button
               mt={'20px'}
-              colorScheme="green"
               w="100%"
-              isLoading={purchase.isPending}
+              isLoading={purchaseTickets.isPending}
               onClick={handlePurchaseTickets}
             >
               Buy Tickets

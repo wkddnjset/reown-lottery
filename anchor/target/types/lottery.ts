@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/lottery.json`.
  */
 export type Lottery = {
-  "address": "2THy5cGocSyxCfV2dBbXLg8CcSUYBFJ4fkDnTyiVWeB4",
+  "address": "pZWobzWKfjoG9QkKXfYvYTjgBQSMRP6Trqc897nUzUa",
   "metadata": {
     "name": "lottery",
     "version": "0.1.0",
@@ -194,30 +194,14 @@ export type Lottery = {
       "code": 6004,
       "name": "unauthorized",
       "msg": "Unauthorized access."
+    },
+    {
+      "code": 6005,
+      "name": "drawNotAllowed",
+      "msg": "Draw is not allowed at this time."
     }
   ],
   "types": [
-    {
-      "name": "drawResult",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "drawTime",
-            "type": "i64"
-          },
-          {
-            "name": "winningNumbers",
-            "type": {
-              "array": [
-                "u8",
-                4
-              ]
-            }
-          }
-        ]
-      }
-    },
     {
       "name": "lottery",
       "type": {
@@ -234,15 +218,19 @@ export type Lottery = {
             }
           },
           {
+            "name": "currentRound",
+            "type": "u64"
+          },
+          {
             "name": "drawTime",
             "type": "i64"
           },
           {
-            "name": "pastDraws",
+            "name": "pastRounds",
             "type": {
               "vec": {
                 "defined": {
-                  "name": "drawResult"
+                  "name": "pastRound"
                 }
               }
             }
@@ -258,6 +246,47 @@ export type Lottery = {
           {
             "name": "admin",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "pastRound",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "roundId",
+            "type": "u64"
+          },
+          {
+            "name": "winner",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "winner"
+                }
+              }
+            }
+          },
+          {
+            "name": "winningNumbers",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          },
+          {
+            "name": "userTickets",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "ticket"
+                }
+              }
+            }
           }
         ]
       }
@@ -283,6 +312,26 @@ export type Lottery = {
           {
             "name": "timestamp",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "winner",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "prize",
+            "type": "u64"
+          },
+          {
+            "name": "rank",
+            "type": "u8"
           }
         ]
       }

@@ -2,23 +2,33 @@ import { useEffect, useState } from 'react'
 
 import { Text, VStack } from '@chakra-ui/react'
 
+import useLottery from '@/hooks/useLottery'
+
 function Countdown() {
   const [timeLeft, setTimeLeft] = useState('00:00:00')
+  const { getLottery } = useLottery()
+
+  const { data } = getLottery
+
+  const drawTime = data?.drawTime || 0
 
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date()
-      const utcHours = now.getUTCHours()
 
-      // 다음 목표 시간 계산 (0시 또는 12시)
-      const targetHour = utcHours >= 12 ? 24 : 12
+      const targetTime = drawTime ? new Date(Number(drawTime) * 1000) : null
 
-      const target = new Date(now)
-      target.setUTCHours(targetHour, 0, 0, 0)
+      if (!targetTime) {
+        return '00:00:00'
+      }
+      return calculateTimeDiff(targetTime, now)
+    }
 
+    const calculateTimeDiff = (target: Date, now: Date) => {
       let diff = target.getTime() - now.getTime()
 
-      // 시, 분, 초 계산
+      if (diff < 0) return '00:00:00'
+
       const hours = Math.floor(diff / (1000 * 60 * 60))
       diff -= hours * 1000 * 60 * 60
       const minutes = Math.floor(diff / (1000 * 60))
@@ -33,12 +43,18 @@ function Countdown() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [])
+  }, [drawTime])
+
   return (
     <VStack spacing={'0px'}>
-      <Text textStyle={'pre-display-02'} lineHeight={'1'}>
-        {timeLeft}
-      </Text>
+      {drawTime === 0 ?
+        <Text textStyle={'pre-display-02'} lineHeight={'1'}>
+          00:00:00
+        </Text>
+      : <Text textStyle={'pre-display-02'} lineHeight={'1'}>
+          {timeLeft}
+        </Text>
+      }
       <Text textStyle={'pre-body-04'} color={'content.5'}>
         Until Next Winner
       </Text>
