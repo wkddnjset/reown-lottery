@@ -120,8 +120,8 @@ export const useLottery = () => {
         .accounts({
           lottery: new PublicKey(lotteryAddress),
           user: new PublicKey(address),
-          pool: new PublicKey(POOL_ADDRESS),
-          dev: DEV_ADDRESS,
+          // pool: new PublicKey(POOL_ADDRESS),
+          // dev: DEV_ADDRESS,
         })
         .rpc()
     },
