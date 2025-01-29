@@ -5,13 +5,13 @@ import {
   Button,
   ChakraProps,
   Flex,
-  Image,
   SimpleGrid,
   Text,
   VStack,
 } from '@chakra-ui/react'
 
 import Ticket from '@/components/Ticket'
+import useLottery from '@/hooks/useLottery'
 
 interface StartProps {
   styles?: {
@@ -21,7 +21,9 @@ interface StartProps {
 
 function Start({ styles }: StartProps) {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
-  const [tickets, setTickets] = useState<number[][]>([])
+  const [tickets, setTickets] = useState<[number, number, number, number][]>([])
+
+  const { purchase } = useLottery()
 
   const handleNumberClick = (num: number) => {
     if (selectedNumbers.includes(num)) {
@@ -47,44 +49,30 @@ function Start({ styles }: StartProps) {
     if (selectedNumbers.length === 4) {
       setTickets((prev) => [
         ...prev,
-        [...selectedNumbers].sort((a, b) => a - b),
+        [...selectedNumbers].sort((a, b) => a - b) as [
+          number,
+          number,
+          number,
+          number,
+        ],
       ])
       setSelectedNumbers([])
     }
   }
 
-  const handlePurchaseTickets = () => {
+  const handlePurchaseTickets = async () => {
     if (tickets.length > 0) {
       // 여기에 티켓 구매 API 호출 로직 추가
       console.log('구매할 티켓들:', tickets)
-      setTickets([])
+      await purchase.mutateAsync(tickets)
+      // setTickets([])
     }
   }
 
   return (
     <Box {...styles?.container} pt={'80px'}>
       <Flex direction="column" align="center" gap={4} mt={'20px'}>
-        <Flex gap={'8px'} justifyContent={'center'} zIndex={10} h={'40px'}>
-          {selectedNumbers.map((num) => (
-            <Box
-              key={num}
-              bg="white"
-              color="black"
-              borderRadius="full"
-              w={'40px'}
-              h={'40px'}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              {num}
-            </Box>
-          ))}
-        </Flex>
-        <Button colorScheme="green" onClick={handleQuickPick} mb={4}>
-          Quick Pick
-        </Button>
-
+        <Ticket numbers={selectedNumbers} />
         <Box bg={'gray.50'} borderRadius={'12px'} p={'12px'}>
           <SimpleGrid columns={6} spacing={2} mb={4}>
             {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
@@ -103,9 +91,18 @@ function Start({ styles }: StartProps) {
               </Button>
             ))}
           </SimpleGrid>
-          <Button onClick={handleAddTicket} w={'100%'}>
-            Add Ticket
-          </Button>
+          <VStack>
+            <Button
+              w={'100%'}
+              variant={'outline-primary'}
+              onClick={handleQuickPick}
+            >
+              Quick Pick
+            </Button>
+            <Button onClick={handleAddTicket} w={'100%'}>
+              Add Ticket
+            </Button>
+          </VStack>
         </Box>
         {tickets.length > 0 && (
           <Box w="100%" maxW="360px">
@@ -119,6 +116,7 @@ function Start({ styles }: StartProps) {
               mt={'20px'}
               colorScheme="green"
               w="100%"
+              isLoading={purchase.isPending}
               onClick={handlePurchaseTickets}
             >
               Buy Tickets

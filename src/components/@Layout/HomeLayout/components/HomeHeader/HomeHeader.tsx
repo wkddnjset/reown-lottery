@@ -1,3 +1,7 @@
+import { useMemo } from 'react'
+
+import { useRouter } from 'next/router'
+
 import { Link } from '@chakra-ui/next-js'
 import {
   Button,
@@ -7,17 +11,17 @@ import {
   Spinner,
   Text,
 } from '@chakra-ui/react'
-
-import { LogoIcon } from 'generated/icons/MyIcons'
+import { useAppKitAccount } from '@reown/appkit/react'
 
 import ClientOnly from '@/components/ClientOnly'
 import { ROUTES } from '@/generated/path/routes'
-import { useAuth } from '@/hooks/useAuth'
-import { useLocalStorage } from '@/stores/local/state'
 
 const HomeHeader = ({ ...props }: ContainerProps) => {
-  const { isLogin } = useAuth()
-  const resetToken = useLocalStorage((store) => store.reset)
+  const router = useRouter()
+  const { address } = useAppKitAccount()
+  const isAdmin = useMemo(() => {
+    return address && process.env.NEXT_PUBLIC_ADMIN_ADDRESS?.includes(address)
+  }, [address])
 
   return (
     <Container
@@ -38,6 +42,15 @@ const HomeHeader = ({ ...props }: ContainerProps) => {
         >{`12'Lottery`}</Text>
       </Link>
       <HStack spacing="16px">
+        {isAdmin && (
+          <Button
+            onClick={() => {
+              router.push('/admin')
+            }}
+          >
+            <Text>Admin</Text>
+          </Button>
+        )}
         <ClientOnly fallback={<Spinner size={'sm'} />}>
           <appkit-button />
         </ClientOnly>

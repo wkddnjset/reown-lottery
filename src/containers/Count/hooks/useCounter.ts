@@ -43,7 +43,6 @@ export const useCounter = () => {
       program.methods
         .initialize(new BN(0))
         .accounts({
-          //   counter: countAddress,
           authority: address,
         })
         .rpc(),

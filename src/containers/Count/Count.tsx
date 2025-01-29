@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react'
-
 import { Button, Center, ChakraProps, Text, VStack } from '@chakra-ui/react'
 import { useAppKitAccount } from '@reown/appkit/react'
 
-// import { useCountProgram } from './hooks/useCountProgram'
 import { useCounter } from './hooks/useCounter'
 
 interface CountProps {
@@ -16,7 +13,7 @@ function Count({ styles }: CountProps) {
   const { initialize, incrementCount, getCount } = useCounter()
   const { address } = useAppKitAccount()
   const { data: countData } = getCount
-  const count = countData?.count.toNumber()
+  const count = countData?.count.toNumber() || 0
 
   return (
     <Center {...styles?.container} flexDirection="column" pt={'100px'}>

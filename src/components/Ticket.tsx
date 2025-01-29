@@ -1,6 +1,12 @@
 import { Badge, Box, Center, Flex, HStack, Image, Text } from '@chakra-ui/react'
 
-const Ticket = ({ numbers, id }: { numbers: number[]; id: number }) => {
+const Ticket = ({
+  numbers,
+  id = null,
+}: {
+  numbers: number[]
+  id?: number | null
+}) => {
   return (
     <Box
       border={'1px solid'}
@@ -23,7 +29,7 @@ const Ticket = ({ numbers, id }: { numbers: number[]; id: number }) => {
             <Text textStyle={'pre-caption-03'}>#TICKET{id}</Text>
           </Badge>
 
-          <HStack alignItems={'center'} justifyContent={'center'}>
+          <HStack alignItems={'center'} justifyContent={'center'} mt={'2px'}>
             {numbers.map((num) => (
               <Box
                 key={num}
