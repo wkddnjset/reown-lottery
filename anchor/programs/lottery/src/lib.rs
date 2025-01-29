@@ -6,7 +6,7 @@ pub mod helpers;
 use self::helpers::*;
 
 
-declare_id!("pZWobzWKfjoG9QkKXfYvYTjgBQSMRP6Trqc897nUzUa");
+declare_id!("Bx9VQTiKcL3bgY1cnKs4bMgs2xR6UG7fNtKciRTU1iQH");
 
 // 상수 정의
 pub const TICKET_PRICE: u64 = 10_000_000; // 0.01 SOL
@@ -56,17 +56,30 @@ pub mod lottery {
         Ok(())
     }
 
-    pub fn draw_winners(ctx: Context<DrawWinners>) -> Result<()> {
+    pub fn draw_winners(ctx: Context<DrawWinners>, next_draw_time: i64) -> Result<()> {
         let lottery = &mut ctx.accounts.lottery;
-        validate_draw_conditions(
-            lottery.admin,
-            *ctx.accounts.user.key,
-            lottery.draw_time,
-            Clock::get()?.unix_timestamp
-        )?;
+        let current_timestamp = Clock::get()?.unix_timestamp;
+
+        // 개발 테스트 과정에서 validation 제외하기
+        // validate_draw_conditions(
+        //     lottery.admin,
+        //     *ctx.accounts.user.key,
+        //     lottery.draw_time,
+        //     current_timestamp
+        // )?;
+
+        // 다음 추첨 시간 유효성 검사 추가
+        if next_draw_time <= current_timestamp + BUFFER_TIME {
+            return Err(error!(CustomError::InvalidNextDrawTime));
+        }
 
         let total_balance = ctx.accounts.pool.to_account_info().lamports();
-        let developer_fee = total_balance / 10;
+        let reserve_amount = 10_000_000; // for gas fee
+
+        // 분배 가능한 총 금액 계산 (총 잔액 - 예약 금액)
+        let distributable_balance = total_balance.saturating_sub(reserve_amount);
+        let developer_fee = distributable_balance / 10;
+
         let current_round = lottery.current_round;
         let tickets_clone = lottery.tickets.clone();
 
@@ -83,24 +96,27 @@ pub mod lottery {
         distribute_prize_for_rank(
             &mut winners,
             &first_place,
-            total_balance * FIRST_PRIZE_PERCENT / 100,
-            ctx.accounts.pool.to_account_info(),
+            distributable_balance * FIRST_PRIZE_PERCENT / 100,
+            &ctx.accounts.pool,
+            &ctx.accounts.system_program,
             1,
         )?;
 
         distribute_prize_for_rank(
             &mut winners,
             &second_place,
-            total_balance * SECOND_PRIZE_PERCENT / 100,
-            ctx.accounts.pool.to_account_info(),
+            distributable_balance * SECOND_PRIZE_PERCENT / 100,
+            &ctx.accounts.pool,
+            &ctx.accounts.system_program,
             2,
         )?;
 
         distribute_prize_for_rank(
             &mut winners,
             &third_place,
-            total_balance * THIRD_PRIZE_PERCENT / 100,
-            ctx.accounts.pool.to_account_info(),
+            distributable_balance * THIRD_PRIZE_PERCENT / 100,
+            &ctx.accounts.pool,
+            &ctx.accounts.system_program,
             3,
         )?;
 
@@ -118,7 +134,7 @@ pub mod lottery {
         // 다음 라운드 준비
         lottery.tickets.clear();
         lottery.current_round += 1;
-
+        lottery.draw_time = next_draw_time;
         Ok(())
     }
 }
@@ -152,32 +168,25 @@ pub struct Purchase<'info> {
 
 #[derive(Accounts)]
 pub struct DrawWinners<'info> {
-  #[account(mut)]
+  #[account(
+      mut,
+      has_one = pool,
+      has_one = dev,
+      constraint = lottery.admin == user.key() @ CustomError::Unauthorized
+  )]
   pub lottery: Account<'info, Lottery>,
   /// CHECK: This is the lottery pool account used for distributing prizes.
-  #[account(mut)]
+  #[account(
+      mut,
+      constraint = pool.data_is_empty() && pool.lamports() > 0
+  )]
   pub pool: AccountInfo<'info>,
   /// CHECK: This is the developer's wallet account.
   #[account(mut)]
   pub dev: AccountInfo<'info>,
   #[account(mut)]
   pub user: Signer<'info>,
-}
-
-#[derive(Accounts)]
-pub struct GetTickets<'info> {
-  #[account(mut)]
-  pub lottery: Account<'info, Lottery>,
-  #[account(mut)]
-  pub user: Signer<'info>,
-}
-
-#[derive(Accounts)]
-pub struct GetPastRounds<'info> {
-    #[account(mut)]
-    pub lottery: Account<'info, Lottery>,
-    #[account(mut)]
-    pub user: Signer<'info>,
+  pub system_program: Program<'info, System>,
 }
 
 #[account]
@@ -190,7 +199,6 @@ pub struct Lottery {
   pub dev: Pubkey,
   pub admin: Pubkey,
 }
-
 
 #[derive(Clone, AnchorSerialize, AnchorDeserialize)]
 pub struct Winner {
@@ -236,4 +244,10 @@ pub enum CustomError {
   Unauthorized, // 관리자 권한 에러
   #[msg("Draw is not allowed at this time.")]
   DrawNotAllowed,
+  #[msg("Invalid next draw time.")]
+  InvalidNextDrawTime,
+  #[msg("Overflow error.")]
+  Overflow,
+  #[msg("Insufficient funds.")]
+  InsufficientFunds,
 }

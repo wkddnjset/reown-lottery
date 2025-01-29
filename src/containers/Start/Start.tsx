@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
+import { useToast } from '@chakra-ui/react'
 import {
   Badge,
   Box,
@@ -33,6 +34,7 @@ function Start({ styles }: StartProps) {
 
   const { purchaseTickets } = useLottery()
   const router = useRouter()
+  const toast = useToast()
 
   const ticketRef = useRef(null)
   const calendarRef = useRef(null)
@@ -104,15 +106,31 @@ function Start({ styles }: StartProps) {
   }
   const handleAddTicket = () => {
     if (selectedNumbers.length === 4) {
-      setTickets((prev) => [
-        ...prev,
-        [...selectedNumbers].sort((a, b) => a - b) as [
-          number,
-          number,
-          number,
-          number,
-        ],
-      ])
+      const newTicket = [...selectedNumbers].sort((a, b) => a - b) as [
+        number,
+        number,
+        number,
+        number,
+      ]
+
+      // 이미 존재하는 티켓인지 확인
+      const isDuplicate = tickets.some((ticket) =>
+        ticket.every((num, index) => num === newTicket[index]),
+      )
+
+      if (isDuplicate) {
+        toast({
+          title: 'Duplicate Ticket',
+          description:
+            'A ticket with the same number combination already exists.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
+        return
+      }
+
+      setTickets((prev) => [...prev, newTicket])
       setSelectedNumbers([])
     }
   }

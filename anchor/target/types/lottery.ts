@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/lottery.json`.
  */
 export type Lottery = {
-  "address": "pZWobzWKfjoG9QkKXfYvYTjgBQSMRP6Trqc897nUzUa",
+  "address": "Bx9VQTiKcL3bgY1cnKs4bMgs2xR6UG7fNtKciRTU1iQH",
   "metadata": {
     "name": "lottery",
     "version": "0.1.0",
@@ -32,19 +32,34 @@ export type Lottery = {
         },
         {
           "name": "pool",
-          "writable": true
+          "writable": true,
+          "relations": [
+            "lottery"
+          ]
         },
         {
           "name": "dev",
-          "writable": true
+          "writable": true,
+          "relations": [
+            "lottery"
+          ]
         },
         {
           "name": "user",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "nextDrawTime",
+          "type": "i64"
+        }
+      ]
     },
     {
       "name": "initializeLottery",
@@ -199,6 +214,21 @@ export type Lottery = {
       "code": 6005,
       "name": "drawNotAllowed",
       "msg": "Draw is not allowed at this time."
+    },
+    {
+      "code": 6006,
+      "name": "invalidNextDrawTime",
+      "msg": "Invalid next draw time."
+    },
+    {
+      "code": 6007,
+      "name": "overflow",
+      "msg": "Overflow error."
+    },
+    {
+      "code": 6008,
+      "name": "insufficientFunds",
+      "msg": "Insufficient funds."
     }
   ],
   "types": [

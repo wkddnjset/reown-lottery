@@ -65,9 +65,10 @@ function Tickets({ styles }: TicketsProps) {
     }
   }, [])
 
-  const userTickets = data?.tickets.filter(
-    (ticket: any) => ticket.owner.toString() === address?.toString(),
-  )
+  const userTickets =
+    data?.tickets.filter(
+      (ticket: any) => ticket.owner.toString() === address?.toString(),
+    ) || []
 
   return (
     <Flex {...styles?.container} pt={'100px'} w={'100%'}>
@@ -85,7 +86,7 @@ function Tickets({ styles }: TicketsProps) {
             My Tickets
           </Text>
           <Box ref={ticketRef} opacity={0} transform={'translateY(30px)'}>
-            {data ?
+            {userTickets && userTickets?.length > 0 ?
               <VStack spacing={'12px'} mt={'20px'}>
                 {userTickets?.map((ticket: any, index: number) => (
                   <Box key={index}>
@@ -95,7 +96,7 @@ function Tickets({ styles }: TicketsProps) {
               </VStack>
             : <Center
                 h={'120px'}
-                w={'290px'}
+                w={'280px'}
                 bg={'#0008'}
                 borderRadius={'12px'}
                 mt={'20px'}

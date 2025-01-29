@@ -1,5 +1,5 @@
 {
-  "address": "pZWobzWKfjoG9QkKXfYvYTjgBQSMRP6Trqc897nUzUa",
+  "address": "Bx9VQTiKcL3bgY1cnKs4bMgs2xR6UG7fNtKciRTU1iQH",
   "metadata": {
     "name": "lottery",
     "version": "0.1.0",
@@ -26,19 +26,34 @@
         },
         {
           "name": "pool",
-          "writable": true
+          "writable": true,
+          "relations": [
+            "lottery"
+          ]
         },
         {
           "name": "dev",
-          "writable": true
+          "writable": true,
+          "relations": [
+            "lottery"
+          ]
         },
         {
           "name": "user",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "next_draw_time",
+          "type": "i64"
+        }
+      ]
     },
     {
       "name": "initialize_lottery",
@@ -193,6 +208,21 @@
       "code": 6005,
       "name": "DrawNotAllowed",
       "msg": "Draw is not allowed at this time."
+    },
+    {
+      "code": 6006,
+      "name": "InvalidNextDrawTime",
+      "msg": "Invalid next draw time."
+    },
+    {
+      "code": 6007,
+      "name": "Overflow",
+      "msg": "Overflow error."
+    },
+    {
+      "code": 6008,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds."
     }
   ],
   "types": [

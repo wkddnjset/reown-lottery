@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useToast } from '@chakra-ui/react'
 import { BN } from '@coral-xyz/anchor'
 import { useAppKitAccount } from '@reown/appkit/react'
-import { Cluster, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
+import { Cluster, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { getLotteryProgram, getLotteryProgramId } from '@/anchor'
@@ -11,10 +11,10 @@ import { useAnchorProvider } from '@/hooks/useAnchorProvider'
 
 const POOL_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_POOL_ADDRESS!
 const DEV_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_DEV_ADDRESS!
+const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_ADMIN_ADDRESS!
 
 export const useLottery = () => {
   const [lotteryAddress, setLotteryAddress] = useState<any>()
-  const [ticketAddress, setTicketAddress] = useState<any>()
 
   const toast = useToast()
   const { address } = useAppKitAccount()
@@ -34,26 +34,15 @@ export const useLottery = () => {
       if (address) {
         if (!lotteryAddress) {
           const [lotteryPDA] = await PublicKey.findProgramAddress(
-            [Buffer.from('lottery'), new PublicKey(DEV_ADDRESS).toBuffer()],
+            [Buffer.from('lottery'), new PublicKey(ADMIN_ADDRESS).toBuffer()],
             programId,
           )
           setLotteryAddress(lotteryPDA.toBase58())
         }
-        if (!ticketAddress && lotteryAddress) {
-          const [ticketPDA] = await PublicKey.findProgramAddress(
-            [
-              Buffer.from('ticket'),
-              new PublicKey(lotteryAddress).toBuffer(),
-              new PublicKey(DEV_ADDRESS).toBuffer(),
-            ],
-            programId,
-          )
-          setTicketAddress(ticketPDA.toBase58())
-        }
       }
     }
     updateState()
-  }, [address, programId, lotteryAddress, ticketAddress])
+  }, [address, programId, lotteryAddress])
 
   const initialize = useMutation({
     mutationKey: ['test', 'initialize', { cluster }],
@@ -117,32 +106,39 @@ export const useLottery = () => {
     },
   })
 
-  // const getMyTickets = useMutation({
-  //   mutationKey: ['test', 'getMyTickets', { cluster }],
-  //   mutationFn: async () => {
-  //     if (!address) return
-  //     return program.methods
-  //       .getTickets()
-  //       .accounts({
-  //         lottery: new PublicKey(lotteryAddress),
-  //         user: new PublicKey(address),
-  //       })
-  //       .rpc()
-  //   },
-  //   onError: (error) =>
-  //     toast({
-  //       title: 'Failed to purchase ticket',
-  //       description: error.message,
-  //       status: 'error',
-  //     }),
-  //   onSuccess: (signature) => {
-  //     toast({
-  //       title: 'Transaction successful',
-  //       description: `tx: ${signature}`,
-  //       status: 'success',
-  //     })
-  //   },
-  // })
+  const drawWinners = useMutation({
+    mutationKey: ['test', 'drawLottery', { cluster }],
+    mutationFn: async () => {
+      console.log('Draw Lottery')
+      if (!address) return
+
+      const now = new Date()
+      const nextDrawTime = Math.floor(now.getTime() / 1000) + 3600 // 1시간 후
+
+      return program.methods
+        .drawWinners(new BN(nextDrawTime))
+        .accounts({
+          lottery: new PublicKey(lotteryAddress),
+          user: new PublicKey(address),
+          pool: new PublicKey(POOL_ADDRESS),
+          dev: DEV_ADDRESS,
+        })
+        .rpc()
+    },
+    onError: (error) =>
+      toast({
+        title: 'Failed to draw winners',
+        description: error.message,
+        status: 'error',
+      }),
+    onSuccess: (signature) => {
+      toast({
+        title: 'Draw Winners successful',
+        description: `tx: ${signature}`,
+        status: 'success',
+      })
+    },
+  })
 
   const getLottery = useQuery({
     queryKey: ['test', 'getLottery', { cluster }],
@@ -157,6 +153,7 @@ export const useLottery = () => {
     purchaseTickets,
     initialize,
     getLottery,
+    drawWinners,
   }
 }
 
