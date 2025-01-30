@@ -88,26 +88,28 @@ function Home() {
     }
     fetchBalance()
   }, [getBalance])
-  console.log('balance', balance)
 
   const totalReward = useMemo(() => {
     const pastRounds = lottery?.pastRounds
     if (pastRounds && pastRounds.length > 0) {
-      return pastRounds.reduce(
-        (acc, curr) =>
-          acc +
-          curr.winner.reduce(
-            (prizeAcc, winner) =>
-              winner.claimed ? prizeAcc : prizeAcc + Number(winner.prize),
-            0,
-          ),
-        0,
+      return (
+        pastRounds.reduce(
+          (acc, curr) =>
+            acc +
+            curr.winner.reduce(
+              (prizeAcc, winner) =>
+                winner.claimed ? prizeAcc : prizeAcc + Number(winner.prize),
+              0,
+            ),
+          0,
+        ) / 1_000_000_000
       )
     }
     return 0
   }, [lottery?.pastRounds])
 
-  console.log('totalReward', totalReward)
+  console.log('balance', balance)
+  0.0285 - 0.0071
 
   return (
     <Center
