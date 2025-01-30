@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Anchor](https://img.shields.io/badge/Anchor-0.28.0-blue)](https://www.anchor-lang.com/)
 [![Reown AppKit](https://img.shields.io/badge/Reown_AppKit-latest-green)](https://github.com/your-repo/reown-appkit)
+[![Node](https://img.shields.io/badge/Node-v22.0.0-brightgreen)](https://nodejs.org/)
+[![NVM](https://img.shields.io/badge/NVM-required-orange)](https://github.com/nvm-sh/nvm)
 
 </div>
 
