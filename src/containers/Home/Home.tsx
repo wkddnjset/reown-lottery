@@ -123,7 +123,7 @@ function Home() {
       overflow={'hidden'}
     >
       <Box
-        mt={{ base: '110px', sm: '140px', md: '180px' }}
+        mt={{ base: '100px', sm: '140px', md: '180px' }}
         ref={countdownRef}
         opacity={0}
         transform={'translateY(30px)'}
@@ -203,7 +203,7 @@ function Home() {
       </Center>
       <VStack
         mt={'auto'}
-        mb={{ base: '40px', sm: '60px' }}
+        mb={{ base: '20px', sm: '60px' }}
         spacing={'10px'}
         ref={buttonsRef}
         opacity={0}
