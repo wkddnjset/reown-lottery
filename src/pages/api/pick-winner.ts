@@ -1,4 +1,4 @@
-import type { NextRequest } from 'next/server'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 import { AnchorProvider, BN, Wallet } from '@coral-xyz/anchor'
 import { Connection, Keypair, PublicKey } from '@solana/web3.js'
@@ -6,8 +6,6 @@ import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import bs58 from 'bs58'
 
 import { getLotteryProgram, getLotteryProgramId } from '@/anchor'
-
-// Supabase 관련 함수
 
 const cluster = 'devnet'
 const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_ADMIN_ADDRESS
@@ -24,15 +22,15 @@ const provider = new AnchorProvider(connection, wallet, {
   commitment: 'confirmed',
 })
 
-async function pickWinner(request: NextRequest) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
-    const authHeader = request.headers.get('authorization')
+    const authHeader = req.headers['authorization']
 
     if (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return Response.json(
-        { error: 'Forbidden: Unauthorized' },
-        { status: 403 },
-      )
+      return res.status(403).json({ error: 'Forbidden: Unauthorized' })
     }
 
     if (!ADMIN_ADDRESS) throw new Error('ADMIN_ADDRESS is not set')
@@ -48,20 +46,14 @@ async function pickWinner(request: NextRequest) {
     // 1. 현재 lottery 상태 가져오기
     const lottery = await program.account.lottery.fetch(lotteryPDA)
     if (!lottery)
-      return Response.json(
-        { error: 'No active lottery found' },
-        { status: 404 },
-      )
+      return res.status(404).json({ error: 'No active lottery found' })
 
     const { drawTime } = lottery
     const now = Math.floor(Date.now() / 1000) // 현재 시간 (초)
 
     // 2. draw_time이 지나지 않았으면 종료
     if (now < Number(drawTime)) {
-      return Response.json(
-        { message: 'No eligible lotteries to draw' },
-        { status: 200 },
-      )
+      return res.status(200).json({ message: 'No eligible lotteries to draw' })
     }
 
     // 4. 12시간 뒤의 draw_time 설정
@@ -79,14 +71,9 @@ async function pickWinner(request: NextRequest) {
 
     console.log('Pick Winners Successful:', tx)
 
-    return Response.json(
-      { message: 'Pick Winners successful', tx },
-      { status: 200 },
-    )
+    return res.status(200).json({ message: 'Pick Winners successful', tx })
   } catch (error: any) {
     console.error('Error picking winners:', error)
-    return Response.json({ error: error.message }, { status: 500 })
+    return res.status(500).json({ error: error.message })
   }
 }
-
-export default pickWinner
