@@ -64,6 +64,7 @@ const HomeHeader = ({ ...props }: ContainerProps) => {
       <HStack spacing="0px">
         {isAdmin && (
           <Button
+            display={{ base: 'none', md: 'block' }}
             size={'sm'}
             onClick={() => {
               router.push('/admin')
