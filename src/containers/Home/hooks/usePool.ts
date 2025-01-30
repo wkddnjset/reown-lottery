@@ -1,15 +1,15 @@
 import { PublicKey } from '@solana/web3.js'
 
 import { useAnchorProvider } from '@/hooks/useAnchorProvider'
-
-const POOL_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_POOL_ADDRESS!
+import useLottery from '@/hooks/useLottery'
 
 const usePool = () => {
+  const { poolAddress } = useLottery()
   const { connection } = useAnchorProvider()
 
   const getBalance = async () => {
     try {
-      const publicKey = new PublicKey(POOL_ADDRESS)
+      const publicKey = new PublicKey(poolAddress)
       const balance = await connection.getBalance(publicKey)
       const solBalance = balance / 1_000_000_000
       return solBalance

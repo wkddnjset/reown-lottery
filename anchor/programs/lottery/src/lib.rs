@@ -6,7 +6,7 @@ pub mod helpers;
 use self::helpers::*;
 
 
-declare_id!("AnfJndcq68tQroPg1FoN5jwqF8qdFw3Y7jBjurk53pYD");
+declare_id!("4ytNhMnguDYzk4CR2FfnAnNrjC7bLTYaGrpPvZy8JPy8");
 
 // 상수 정의
 pub const TICKET_PRICE: u64 = 10_000_000; // 0.01 SOL
@@ -34,6 +34,8 @@ pub mod lottery {
         let (pool_pda, bump) = Pubkey::find_program_address(&[b"lottery_pool"], ctx.program_id);
         lottery.pool = pool_pda;
         lottery.bump = bump;
+        // lottery.pool = *ctx.accounts.pool.key; // 실제 풀 지갑 주소 직접 설정
+        // lottery.bump = 0;
         lottery.dev = *ctx.accounts.dev.key;
         lottery.admin = *ctx.accounts.user.key; // 관리자 설정
         Ok(())

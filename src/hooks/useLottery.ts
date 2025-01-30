@@ -9,7 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { getLotteryProgram, getLotteryProgramId } from '@/anchor'
 import { useAnchorProvider } from '@/hooks/useAnchorProvider'
 
-const POOL_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_POOL_ADDRESS!
+// const POOL_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_POOL_ADDRESS!
 const DEV_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_DEV_ADDRESS!
 const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_ADMIN_ADDRESS!
 const RESET_LOTTERY_TIME = process.env.NEXT_PUBLIC_RESET_LOTTERY_TIME! || 1
@@ -71,7 +71,7 @@ export const useLottery = () => {
         .accounts({
           user: address,
           dev: DEV_ADDRESS,
-          pool: POOL_ADDRESS,
+          pool: poolAddress,
         })
         .rpc()
     },
@@ -199,6 +199,7 @@ export const useLottery = () => {
     getLottery,
     pickWinners,
     claimPrize,
+    poolAddress,
   }
 }
 

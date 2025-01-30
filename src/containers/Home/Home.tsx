@@ -88,6 +88,7 @@ function Home() {
     }
     fetchBalance()
   }, [getBalance])
+  console.log('balance', balance)
 
   const totalReward = useMemo(() => {
     const pastRounds = lottery?.pastRounds
