@@ -16,15 +16,16 @@ import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 
 import gsap from 'gsap'
 
+import { useLottery } from '@/hooks/useLottery'
+
 import Countdown from './components/Countdown'
-import usePool from './hooks/usePool'
 
 function Home() {
-  const [balance, setBalance] = useState<number>(0)
-
   const { open } = useAppKit()
   const { isConnected } = useAppKitAccount()
-  const { getBalance } = usePool()
+  const { getLottery } = useLottery()
+
+  const { data: lottery } = getLottery
 
   const router = useRouter()
 
@@ -79,14 +80,13 @@ function Home() {
     }
   }, [])
 
-  useEffect(() => {
-    const fetchBalance = async () => {
-      const result = await getBalance()
-      setBalance(result || 0)
-    }
-    fetchBalance()
-  }, [getBalance])
+  const totalReward = useMemo(() => {
+    return lottery?.tickets && lottery?.tickets.length > 0 ?
+        lottery?.tickets.length * 0.0095
+      : 0
+  }, [lottery?.tickets])
 
+  console.log('lottery : ', lottery?.tickets)
   return (
     <Center
       h={'100%'}
@@ -125,7 +125,7 @@ function Home() {
               Total Reward
             </Text>
             <Text textStyle={'pre-display-02'} lineHeight={'1'}>
-              {balance ? Number(balance).toFixed(4) : 0}
+              {Number(totalReward).toFixed(4)}
             </Text>
             <Text textStyle={'pre-caption-01'} color={'content.5'} mt={'5px'}>
               SOL

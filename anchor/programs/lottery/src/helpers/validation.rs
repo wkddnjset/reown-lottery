@@ -75,3 +75,19 @@ pub fn validate_draw_conditions(
 
     Ok(())
 }
+
+pub fn validate_dev_key(new_dev: Pubkey, dev: Pubkey) -> Result<()> {
+    require_keys_eq!(
+        new_dev, dev,
+        CustomError::InvalidDevAccount
+    );
+    Ok(())
+}
+
+pub fn validate_pool_key(new_pool: Pubkey, pool: Pubkey) -> Result<()> {
+    require_keys_eq!(
+        new_pool, pool,
+        CustomError::InvalidPoolAccount
+    );
+    Ok(())
+}

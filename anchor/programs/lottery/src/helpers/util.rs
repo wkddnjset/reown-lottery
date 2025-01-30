@@ -35,3 +35,8 @@ pub fn categorize_winners(tickets: &Vec<Ticket>, winning_numbers: &[u8; 4]) -> (
 
     (first_place, second_place, third_place)
 }
+
+pub fn count_matching_numbers(winning_numbers: &[u8; 4], ticket_numbers: &[u8; 4]) -> u8 {
+    let winning_set: std::collections::HashSet<u8> = winning_numbers.iter().cloned().collect();
+    ticket_numbers.iter().filter(|&&num| winning_set.contains(&num)).count() as u8
+}

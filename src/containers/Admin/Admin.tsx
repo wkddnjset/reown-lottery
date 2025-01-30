@@ -9,15 +9,11 @@ interface AdminProps {
 }
 
 function Admin({ styles }: AdminProps) {
-  const { initialize, getLottery, drawWinners } = useLottery()
+  const { initialize, getLottery, pickWinners } = useLottery()
   const POOL_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_POOL_ADDRESS
   const DEV_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_DEV_ADDRESS
   const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_ADMIN_ADDRESS
   const { data } = getLottery
-
-  const drawLottery = () => {
-    drawWinners.mutate()
-  }
 
   return (
     <Flex
@@ -71,10 +67,10 @@ function Admin({ styles }: AdminProps) {
           mt={'10px'}
           size={'lg'}
           w={'280px'}
-          isLoading={drawWinners.isPending}
-          onClick={() => drawWinners.mutate()}
+          isLoading={pickWinners.isPending}
+          onClick={() => pickWinners.mutate()}
         >
-          Draw Lottery
+          Pick Winners
         </Button>
       </Flex>
     </Flex>

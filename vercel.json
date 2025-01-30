@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/pick-winner",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}

@@ -12,9 +12,11 @@ import { useAnchorProvider } from '@/hooks/useAnchorProvider'
 const POOL_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_POOL_ADDRESS!
 const DEV_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_DEV_ADDRESS!
 const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_ADMIN_ADDRESS!
+const RESET_LOTTERY_TIME = process.env.NEXT_PUBLIC_RESET_LOTTERY_TIME! || 1
 
 export const useLottery = () => {
   const [lotteryAddress, setLotteryAddress] = useState<any>()
+  const [poolAddress, setPoolAddress] = useState<any>()
 
   const toast = useToast()
   const { address } = useAppKitAccount()
@@ -39,16 +41,24 @@ export const useLottery = () => {
           )
           setLotteryAddress(lotteryPDA.toBase58())
         }
+        if (!poolAddress) {
+          const [poolPDA] = await PublicKey.findProgramAddress(
+            [Buffer.from('lottery_pool')],
+            programId,
+          )
+          setPoolAddress(poolPDA.toBase58())
+        }
       }
     }
     updateState()
-  }, [address, programId, lotteryAddress])
+  }, [address, programId, lotteryAddress, poolAddress])
 
   const initialize = useMutation({
     mutationKey: ['test', 'initialize', { cluster }],
     mutationFn: () => {
       const now = new Date()
-      const nextDrawTime = Math.floor(now.getTime() / 1000) + 3600 * 8 // 1시간 후
+      const nextDrawTime =
+        Math.floor(now.getTime() / 1000) + 3600 * Number(RESET_LOTTERY_TIME) // 1시간 후
 
       return program.methods
         .initializeLottery(new BN(nextDrawTime))
@@ -85,9 +95,10 @@ export const useLottery = () => {
       return program.methods
         .purchaseTickets(tickets)
         .accounts({
-          lottery: new PublicKey(lotteryAddress),
+          lottery: lotteryAddress,
+          dev: DEV_ADDRESS,
+          pool: poolAddress,
           user: new PublicKey(address),
-          pool: new PublicKey(POOL_ADDRESS),
         })
         .rpc()
     },
@@ -106,22 +117,20 @@ export const useLottery = () => {
     },
   })
 
-  const drawWinners = useMutation({
-    mutationKey: ['test', 'drawLottery', { cluster }],
+  const pickWinners = useMutation({
+    mutationKey: ['test', 'pickWinners', { cluster }],
     mutationFn: async () => {
-      console.log('Draw Lottery')
+      console.log('Pick Winners')
       if (!address) return
 
       const now = new Date()
       const nextDrawTime = Math.floor(now.getTime() / 1000) + 3600 * 12 // 12시간 후
 
       return program.methods
-        .drawWinners(new BN(nextDrawTime))
+        .pickWinners(new BN(nextDrawTime))
         .accounts({
-          lottery: new PublicKey(lotteryAddress),
+          lottery: lotteryAddress,
           user: new PublicKey(address),
-          // pool: new PublicKey(POOL_ADDRESS),
-          // dev: DEV_ADDRESS,
         })
         .rpc()
     },
@@ -140,6 +149,27 @@ export const useLottery = () => {
     },
   })
 
+  const claimPrize = useMutation({
+    mutationKey: ['test', 'claim', { cluster }],
+    mutationFn: async ({
+      roundId,
+      rank,
+    }: {
+      roundId: number
+      rank: number
+    }) => {
+      if (!address) return
+      return program.methods
+        .claimPrize(new BN(roundId), rank)
+        .accounts({
+          lottery: lotteryAddress,
+          pool: poolAddress,
+          user: new PublicKey(address),
+        })
+        .rpc()
+    },
+  })
+
   const getLottery = useQuery({
     queryKey: ['test', 'getLottery', { cluster }],
     queryFn: () => {
@@ -153,7 +183,8 @@ export const useLottery = () => {
     purchaseTickets,
     initialize,
     getLottery,
-    drawWinners,
+    pickWinners,
+    claimPrize,
   }
 }
 

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/lottery.json`.
  */
 export type Lottery = {
-  "address": "DyFeDEpHvSZ3GabLjyKR2wQ1jfxV6G4ZVS2tu4waPjFg",
+  "address": "BT5phA3eNcKRAjgbjWbqAsXLffC61ivRL4xtrg7uFWVd",
   "metadata": {
     "name": "lottery",
     "version": "0.1.0",
@@ -14,16 +14,16 @@ export type Lottery = {
   },
   "instructions": [
     {
-      "name": "drawWinners",
+      "name": "claimPrize",
       "discriminator": [
-        43,
-        87,
-        86,
-        4,
-        32,
-        104,
-        203,
-        209
+        157,
+        233,
+        139,
+        121,
+        246,
+        62,
+        234,
+        235
       ],
       "accounts": [
         {
@@ -32,17 +32,7 @@ export type Lottery = {
         },
         {
           "name": "pool",
-          "writable": true,
-          "relations": [
-            "lottery"
-          ]
-        },
-        {
-          "name": "dev",
-          "writable": true,
-          "relations": [
-            "lottery"
-          ]
+          "writable": true
         },
         {
           "name": "user",
@@ -56,8 +46,12 @@ export type Lottery = {
       ],
       "args": [
         {
-          "name": "nextDrawTime",
-          "type": "i64"
+          "name": "roundId",
+          "type": "u64"
+        },
+        {
+          "name": "rank",
+          "type": "u8"
         }
       ]
     },
@@ -124,6 +118,54 @@ export type Lottery = {
       ]
     },
     {
+      "name": "pickWinners",
+      "discriminator": [
+        39,
+        147,
+        187,
+        136,
+        182,
+        157,
+        144,
+        130
+      ],
+      "accounts": [
+        {
+          "name": "lottery",
+          "writable": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "relations": [
+            "lottery"
+          ]
+        },
+        {
+          "name": "dev",
+          "writable": true,
+          "relations": [
+            "lottery"
+          ]
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "nextDrawTime",
+          "type": "i64"
+        }
+      ]
+    },
+    {
       "name": "purchaseTickets",
       "discriminator": [
         146,
@@ -147,6 +189,10 @@ export type Lottery = {
         },
         {
           "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "dev",
           "writable": true
         },
         {
@@ -229,6 +275,21 @@ export type Lottery = {
       "code": 6008,
       "name": "insufficientFunds",
       "msg": "Insufficient funds."
+    },
+    {
+      "code": 6009,
+      "name": "alreadyClaimed",
+      "msg": "Already claimed."
+    },
+    {
+      "code": 6010,
+      "name": "invalidDevAccount",
+      "msg": "Invalid developer account."
+    },
+    {
+      "code": 6011,
+      "name": "invalidPoolAccount",
+      "msg": "Invalid pool account."
     }
   ],
   "types": [
@@ -268,6 +329,10 @@ export type Lottery = {
           {
             "name": "pool",
             "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           },
           {
             "name": "dev",
@@ -362,6 +427,10 @@ export type Lottery = {
           {
             "name": "rank",
             "type": "u8"
+          },
+          {
+            "name": "claimed",
+            "type": "bool"
           }
         ]
       }

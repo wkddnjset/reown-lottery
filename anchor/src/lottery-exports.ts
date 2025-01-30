@@ -31,7 +31,7 @@ export function getLotteryProgramId(cluster: Cluster) {
     case 'devnet':
     case 'testnet':
       // This is the program ID for the Test program on devnet and testnet.
-      return new PublicKey('DyFeDEpHvSZ3GabLjyKR2wQ1jfxV6G4ZVS2tu4waPjFg')
+      return new PublicKey('BT5phA3eNcKRAjgbjWbqAsXLffC61ivRL4xtrg7uFWVd')
     case 'mainnet-beta':
     default:
       return LOTTERY_PROGRAM_ID

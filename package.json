@@ -47,6 +47,7 @@
     "@toktokhan-dev/universal": "^0.0.8",
     "@toktokhan-dev/zustand-react": "^0.0.3",
     "axios": "^1.7.2",
+    "bs58": "^6.0.0",
     "chakra-react-select": "^4.8.0",
     "dayjs": "^1.11.11",
     "framer-motion": "^11.2.10",
