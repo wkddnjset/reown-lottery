@@ -57,7 +57,15 @@ export default async function handler(
     }
 
     // 4. 12시간 뒤의 draw_time 설정
-    const nextDrawTime = new BN(now + 3600 * Number(RESET_LOTTERY_TIME))
+    const currentDate = new Date()
+    const nextHour = new Date(currentDate)
+    nextHour.setHours(
+      currentDate.getHours() + Number(RESET_LOTTERY_TIME),
+      0,
+      0,
+      0,
+    )
+    const nextDrawTime = new BN(Math.floor(nextHour.getTime() / 1000))
 
     // 5. Pick Winners 실행
     console.log('Executing pickWinners...')
