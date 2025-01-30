@@ -123,7 +123,7 @@ function Home() {
       overflow={'hidden'}
     >
       <Box
-        mt={{ base: '140px', md: '180px' }}
+        mt={{ base: '110px', sm: '140px', md: '180px' }}
         ref={countdownRef}
         opacity={0}
         transform={'translateY(30px)'}

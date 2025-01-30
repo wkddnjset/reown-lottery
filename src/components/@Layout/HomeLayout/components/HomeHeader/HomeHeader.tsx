@@ -34,6 +34,8 @@ const HomeHeader = ({ ...props }: ContainerProps) => {
       borderBottom={'1px solid'}
       borderColor={'content.1'}
       backdropFilter={'blur(10px)'}
+      px={{ base: '12px', sm: '24px', md: '40px' }}
+      pr={{ base: '4px', sm: '24px', md: '40px' }}
       // pr={'5px'}
       {...props}
     >
@@ -47,21 +49,22 @@ const HomeHeader = ({ ...props }: ContainerProps) => {
             bg={'red.100'}
             gap={'4px'}
             px={'6px'}
-            py={'3px'}
+            py={'4px'}
             borderRadius={'full'}
             alignItems={'center'}
             justifyContent={'center'}
           >
             <Box bg={'red.500'} boxSize={'6px'} borderRadius={'full'} />
             <Text textStyle={'pre-caption-01'} color={'red.500'}>
-              DEVNET only
+              DEVNET
             </Text>
           </Flex>
         </Flex>
       </Link>
-      <HStack spacing="16px">
+      <HStack spacing="0px">
         {isAdmin && (
           <Button
+            size={'sm'}
             onClick={() => {
               router.push('/admin')
             }}
