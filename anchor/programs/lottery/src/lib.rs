@@ -6,7 +6,7 @@ pub mod helpers;
 use self::helpers::*;
 
 
-declare_id!("BG8NB9dvVzUDRTCxEKszF7A9E2cvLryC2yF7iTAqTNzz");
+declare_id!("AnfJndcq68tQroPg1FoN5jwqF8qdFw3Y7jBjurk53pYD");
 
 // 상수 정의
 pub const TICKET_PRICE: u64 = 10_000_000; // 0.01 SOL
@@ -78,7 +78,7 @@ pub mod lottery {
         if tickets_clone.is_empty() {
             lottery.draw_time = current_timestamp + 1730; // 1730초 = 28분
             msg!("No tickets found. Draw time extended by 28 minutes.");
-            return Err(error!(CustomError::NoTickets));
+            return Ok(());
         }
 
         // 개발 테스트 환경에서 해당 validation 제외
