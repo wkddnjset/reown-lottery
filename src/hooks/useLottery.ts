@@ -53,6 +53,7 @@ export const useLottery = () => {
     updateState()
   }, [address, programId, lotteryAddress, poolAddress])
 
+  const isNotDevnet = cluster !== 'devnet'
   const initialize = useMutation({
     mutationKey: ['test', 'initialize', { cluster }],
     mutationFn: () => {
@@ -97,6 +98,14 @@ export const useLottery = () => {
     mutationFn: async (tickets: [number, number, number, number][]) => {
       console.log('Purchase Ticket:', tickets)
       if (!address) return
+      if (isNotDevnet) {
+        toast({
+          title: 'Not available on this network',
+          description: 'This feature is only available on devnet',
+          status: 'error',
+        })
+        return
+      }
 
       return program.methods
         .purchaseTickets(tickets)
@@ -128,6 +137,14 @@ export const useLottery = () => {
     mutationFn: async () => {
       console.log('Pick Winners')
       if (!address) return
+      if (isNotDevnet) {
+        toast({
+          title: 'Not available on this network',
+          description: 'This feature is only available on devnet',
+          status: 'error',
+        })
+        return
+      }
 
       const currentDate = new Date()
       const nextHour = new Date(currentDate)
@@ -173,6 +190,14 @@ export const useLottery = () => {
       rank: number
     }) => {
       if (!address) return
+      if (isNotDevnet) {
+        toast({
+          title: 'Not available on this network',
+          description: 'This feature is only available on devnet',
+          status: 'error',
+        })
+        return
+      }
       return program.methods
         .claimPrize(new BN(roundId), rank)
         .accounts({
