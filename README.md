@@ -6,9 +6,11 @@
 [![Anchor](https://img.shields.io/badge/Anchor-0.28.0-blue)](https://www.anchor-lang.com/)
 [![Reown AppKit](https://img.shields.io/badge/Reown_AppKit-latest-green)](https://github.com/your-repo/reown-appkit)
 
+</div>
+
 A decentralized lottery dApp that randomly selects winners every 12 hours (currently operating at 1-hour intervals for testing)
 
-</div>
+WEBSITE : https://reown-lottery.vercel.app/
 
 ## 📚 Overview
 
