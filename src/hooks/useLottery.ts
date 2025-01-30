@@ -56,9 +56,15 @@ export const useLottery = () => {
   const initialize = useMutation({
     mutationKey: ['test', 'initialize', { cluster }],
     mutationFn: () => {
-      const now = new Date()
-      const nextDrawTime =
-        Math.floor(now.getTime() / 1000) + 3600 * Number(RESET_LOTTERY_TIME) // 1시간 후
+      const currentDate = new Date()
+      const nextHour = new Date(currentDate)
+      nextHour.setHours(
+        currentDate.getHours() + Number(RESET_LOTTERY_TIME),
+        0,
+        0,
+        0,
+      )
+      const nextDrawTime = new BN(Math.floor(nextHour.getTime() / 1000))
 
       return program.methods
         .initializeLottery(new BN(nextDrawTime))

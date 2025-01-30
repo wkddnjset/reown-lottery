@@ -16,7 +16,8 @@ import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 
 import gsap from 'gsap'
 
-// import { useLottery } from '@/hooks/useLottery'
+import { useLottery } from '@/hooks/useLottery'
+
 import Countdown from './components/Countdown'
 import usePool from './hooks/usePool'
 
@@ -25,8 +26,8 @@ function Home() {
   const { open } = useAppKit()
   const { isConnected } = useAppKitAccount()
   const { getBalance } = usePool()
-  // const { getLottery } = useLottery()
-  // const { data: lottery } = getLottery
+  const { getLottery } = useLottery()
+  const { data: lottery } = getLottery
 
   const router = useRouter()
 
@@ -88,11 +89,25 @@ function Home() {
     fetchBalance()
   }, [getBalance])
 
-  // const totalReward = useMemo(() => {
-  //   return lottery?.tickets && lottery?.tickets.length > 0 ?
-  //       lottery?.tickets.length * 0.0095
-  //     : 0
-  // }, [lottery?.tickets])
+  const totalReward = useMemo(() => {
+    const pastRounds = lottery?.pastRounds
+    if (pastRounds && pastRounds.length > 0) {
+      return pastRounds.reduce(
+        (acc, curr) =>
+          acc +
+          curr.winner.reduce(
+            (prizeAcc, winner) =>
+              winner.claimed ? prizeAcc : prizeAcc + Number(winner.prize),
+            0,
+          ),
+        0,
+      )
+    }
+    return 0
+  }, [lottery?.pastRounds])
+
+  console.log('totalReward', totalReward)
+
   return (
     <Center
       h={'100%'}
@@ -131,7 +146,9 @@ function Home() {
               Total Reward
             </Text>
             <Text textStyle={'pre-display-02'} lineHeight={'1'}>
-              {balance > 0 ? Number(balance - 2.159911).toFixed(4) : `0.0000`}
+              {balance > 0 ?
+                Number(balance - totalReward).toFixed(4)
+              : `0.0000`}
             </Text>
             <Text textStyle={'pre-caption-01'} color={'content.5'} mt={'5px'}>
               SOL
