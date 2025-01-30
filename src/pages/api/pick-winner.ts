@@ -30,11 +30,14 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
-    // X-API-KEY 검증
-    const apiKey = req.headers['x-api-key']
-    if (!X_API_KEY) throw new Error('Server X_API_KEY is not set')
-    if (!apiKey) throw new Error('X-API-KEY header is missing')
-    if (apiKey !== X_API_KEY) throw new Error('Invalid X-API-KEY')
+    // 요청의 User-Agent 확인
+    const userAgent = req.headers['user-agent'] || ''
+
+    // Vercel cron job인지 확인
+    if (!userAgent.includes('Vercel')) {
+      return res.status(403).json({ error: 'Forbidden: Not from Vercel' })
+    }
+
     if (!ADMIN_ADDRESS) throw new Error('ADMIN_ADDRESS is not set')
 
     const programId = await getLotteryProgramId(cluster)
