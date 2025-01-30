@@ -13,6 +13,7 @@
 A decentralized lottery dApp that randomly selects winners every 12 hours (currently operating at 1-hour intervals for testing)
 
 WEBSITE : https://reown-lottery.vercel.app/
+PITCH DECK : https://pitch.com/v/12lottery-psxu9s
 
 ## 📚 Overview
 
