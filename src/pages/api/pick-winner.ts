@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextRequest } from 'next/server'
 
 import { AnchorProvider, BN, Wallet } from '@coral-xyz/anchor'
 import { Connection, Keypair, PublicKey } from '@solana/web3.js'
@@ -10,7 +10,6 @@ import { getLotteryProgram, getLotteryProgramId } from '@/anchor'
 // Supabase 관련 함수
 
 const cluster = 'devnet'
-const X_API_KEY = process.env.X_API_KEY
 const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_LOTTERY_ADMIN_ADDRESS
 const SECRET_KEY = process.env.LOTTERY_ADMIN_PRIVATE_KEY // 환경변수에 보관된 Keypair
 const RPC_URL = `https://api.${cluster}.solana.com`
@@ -25,15 +24,15 @@ const provider = new AnchorProvider(connection, wallet, {
   commitment: 'confirmed',
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export async function GET(request: NextRequest) {
   try {
-    const authHeader = req.headers['authorization']
+    const authHeader = request.headers.get('authorization')
 
-    if (!authHeader || authHeader !== X_API_KEY) {
-      return res.status(403).json({ error: 'Forbidden: Unauthorized' })
+    if (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return Response.json(
+        { error: 'Forbidden: Unauthorized' },
+        { status: 403 },
+      )
     }
 
     if (!ADMIN_ADDRESS) throw new Error('ADMIN_ADDRESS is not set')
@@ -49,14 +48,20 @@ export default async function handler(
     // 1. 현재 lottery 상태 가져오기
     const lottery = await program.account.lottery.fetch(lotteryPDA)
     if (!lottery)
-      return res.status(404).json({ error: 'No active lottery found' })
+      return Response.json(
+        { error: 'No active lottery found' },
+        { status: 404 },
+      )
 
     const { drawTime } = lottery
     const now = Math.floor(Date.now() / 1000) // 현재 시간 (초)
 
     // 2. draw_time이 지나지 않았으면 종료
     if (now < Number(drawTime)) {
-      return res.status(200).json({ message: 'No eligible lotteries to draw' })
+      return Response.json(
+        { message: 'No eligible lotteries to draw' },
+        { status: 200 },
+      )
     }
 
     // 4. 12시간 뒤의 draw_time 설정
@@ -74,9 +79,12 @@ export default async function handler(
 
     console.log('Pick Winners Successful:', tx)
 
-    return res.status(200).json({ message: 'Pick Winners successful', tx })
+    return Response.json(
+      { message: 'Pick Winners successful', tx },
+      { status: 200 },
+    )
   } catch (error: any) {
     console.error('Error picking winners:', error)
-    return res.status(500).json({ error: error.message })
+    return Response.json({ error: error.message }, { status: 500 })
   }
 }
