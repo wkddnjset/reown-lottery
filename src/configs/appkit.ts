@@ -44,6 +44,7 @@ export const modal = createAppKit({
   themeMode: 'dark',
 })
 
+const ADMIN_PATHS = ['/admin']
 const AUTH_PATHS = ['/admin', '/start', '/tickets']
 function AppKitProvider({ children }: { children: ReactNode }) {
   const { isConnected, address } = useAppKitAccount()
@@ -72,7 +73,7 @@ function AppKitProvider({ children }: { children: ReactNode }) {
     if (!isConnected && AUTH_PATHS.includes(router.pathname)) {
       goHome()
     }
-    if (AUTH_PATHS.includes(router.pathname) && !isAdmin) {
+    if (ADMIN_PATHS.includes(router.pathname) && !isAdmin) {
       goHome()
     }
   }, [isConnected, address, router, isAdmin, goHome])
