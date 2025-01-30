@@ -6,7 +6,7 @@ pub mod helpers;
 use self::helpers::*;
 
 
-declare_id!("4ytNhMnguDYzk4CR2FfnAnNrjC7bLTYaGrpPvZy8JPy8");
+declare_id!("4QfdaA6H8YijeX4d2zVxaEmxZmyKzAHm9rqZipTCwXEP");
 
 // 상수 정의
 pub const TICKET_PRICE: u64 = 10_000_000; // 0.01 SOL
@@ -320,7 +320,7 @@ pub struct PastRound {
 }
 
 impl Lottery {
-  pub const LEN: usize = 8 + 4 + (8 + 4 * 1) * 100 + 32 + 32 + 32; // 티켓과 당첨 결과 예상 크기
+    pub const LEN: usize = 8 + 4 + (8 + 4 * 1) * 500 + 32 + 32 + 32;
 }
 
 #[account]

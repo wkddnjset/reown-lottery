@@ -15,8 +15,6 @@ export default function withAuthGuard<T extends ComponentType<any>>(
     const toast = useToast()
 
     useEffect(() => {
-      console.log('isConnected', isConnected)
-
       if (!init) {
         setInit(true)
         return

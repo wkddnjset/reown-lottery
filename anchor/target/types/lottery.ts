@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/lottery.json`.
  */
 export type Lottery = {
-  "address": "4ytNhMnguDYzk4CR2FfnAnNrjC7bLTYaGrpPvZy8JPy8",
+  "address": "4QfdaA6H8YijeX4d2zVxaEmxZmyKzAHm9rqZipTCwXEP",
   "metadata": {
     "name": "lottery",
     "version": "0.1.0",

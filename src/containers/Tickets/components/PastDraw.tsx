@@ -107,8 +107,6 @@ function PastDraws({ data }: { data: any }) {
       </Flex>
       <VStack mt={'10px'}>
         {currentRound.winner.map((winner: any, index: any) => {
-          console.log(winner)
-          console.log('winner.claimed', winner.claimed)
           return (
             <Flex
               key={index}

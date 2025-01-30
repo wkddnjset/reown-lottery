@@ -111,9 +111,6 @@ function Home() {
     return 0
   }, [lottery?.pastRounds])
 
-  console.log('balance', balance)
-  0.0285 - 0.0071
-
   return (
     <Center
       h={'100%'}
