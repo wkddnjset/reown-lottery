@@ -30,12 +30,10 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
-    // 요청의 User-Agent 확인
-    const userAgent = req.headers['user-agent'] || ''
+    const authHeader = req.headers['authorization']
 
-    // Vercel cron job인지 확인
-    if (!userAgent.includes('Vercel')) {
-      return res.status(403).json({ error: 'Forbidden: Not from Vercel' })
+    if (!authHeader || authHeader !== X_API_KEY) {
+      return res.status(403).json({ error: 'Forbidden: Unauthorized' })
     }
 
     if (!ADMIN_ADDRESS) throw new Error('ADMIN_ADDRESS is not set')
