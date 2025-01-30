@@ -64,7 +64,7 @@ const HomeLayout = ({
     <Grid
       w={'100%'}
       minW={'100%'}
-      minH={'100vh'}
+      minH={{ base: 'calc(100vh - 80px)', sm: '100vh' }}
       pos={'relative'}
       gridAutoColumns={'1fr'}
       gridTemplateRows={`${0} 1fr auto`}
