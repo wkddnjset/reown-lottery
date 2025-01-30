@@ -97,14 +97,11 @@ export const useLottery = () => {
     mutationKey: ['test', 'purchase', { cluster }],
     mutationFn: async (tickets: [number, number, number, number][]) => {
       console.log('Purchase Ticket:', tickets)
-      if (!address) return
+      if (!address) {
+        throw new Error('Wallet is not connected')
+      }
       if (isNotDevnet) {
-        toast({
-          title: 'Not available on this network',
-          description: 'This feature is only available on devnet',
-          status: 'error',
-        })
-        return
+        throw new Error('This feature is only available on devnet')
       }
 
       return program.methods
@@ -136,14 +133,11 @@ export const useLottery = () => {
     mutationKey: ['test', 'pickWinners', { cluster }],
     mutationFn: async () => {
       console.log('Pick Winners')
-      if (!address) return
+      if (!address) {
+        throw new Error('Wallet is not connected')
+      }
       if (isNotDevnet) {
-        toast({
-          title: 'Not available on this network',
-          description: 'This feature is only available on devnet',
-          status: 'error',
-        })
-        return
+        throw new Error('This feature is only available on devnet')
       }
 
       const currentDate = new Date()
@@ -189,14 +183,11 @@ export const useLottery = () => {
       roundId: number
       rank: number
     }) => {
-      if (!address) return
+      if (!address) {
+        throw new Error('Wallet is not connected')
+      }
       if (isNotDevnet) {
-        toast({
-          title: 'Not available on this network',
-          description: 'This feature is only available on devnet',
-          status: 'error',
-        })
-        return
+        throw new Error('This feature is only available on devnet')
       }
       return program.methods
         .claimPrize(new BN(roundId), rank)
@@ -206,6 +197,19 @@ export const useLottery = () => {
           user: new PublicKey(address),
         })
         .rpc()
+    },
+    onError: (error) =>
+      toast({
+        title: 'Failed to claim prize',
+        description: error.message,
+        status: 'error',
+      }),
+    onSuccess: (signature) => {
+      toast({
+        title: 'Claim Prize successful',
+        description: `tx: ${signature}`,
+        status: 'success',
+      })
     },
   })
 
