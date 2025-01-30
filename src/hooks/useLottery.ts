@@ -123,8 +123,16 @@ export const useLottery = () => {
       console.log('Pick Winners')
       if (!address) return
 
-      const unixTimestampNow = Math.floor(Date.now() / 1000) // 현재 Unix 타임스탬프
-      const nextDrawTime = unixTimestampNow + 3600 * Number(RESET_LOTTERY_TIME) // 12시간 후
+      const currentDate = new Date()
+      const nextHour = new Date(currentDate)
+      nextHour.setHours(
+        currentDate.getHours() + Number(RESET_LOTTERY_TIME),
+        0,
+        0,
+        0,
+      )
+      const nextDrawTime = new BN(Math.floor(nextHour.getTime() / 1000))
+
       console.log('nextDrawTime', nextDrawTime)
       return program.methods
         .pickWinners(new BN(nextDrawTime))
