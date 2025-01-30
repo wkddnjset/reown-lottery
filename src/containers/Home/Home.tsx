@@ -86,7 +86,6 @@ function Home() {
       : 0
   }, [lottery?.tickets])
 
-  console.log('lottery : ', lottery?.tickets)
   return (
     <Center
       h={'100%'}

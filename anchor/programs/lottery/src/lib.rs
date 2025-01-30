@@ -6,7 +6,7 @@ pub mod helpers;
 use self::helpers::*;
 
 
-declare_id!("BT5phA3eNcKRAjgbjWbqAsXLffC61ivRL4xtrg7uFWVd");
+declare_id!("BG8NB9dvVzUDRTCxEKszF7A9E2cvLryC2yF7iTAqTNzz");
 
 // 상수 정의
 pub const TICKET_PRICE: u64 = 10_000_000; // 0.01 SOL
@@ -73,6 +73,13 @@ pub mod lottery {
     pub fn pick_winners(ctx: Context<PickWinners>, next_draw_time: i64) -> Result<()> {
         let lottery = &mut ctx.accounts.lottery;
         let current_timestamp = Clock::get()?.unix_timestamp;
+        let tickets_clone = lottery.tickets.clone();
+
+        if tickets_clone.is_empty() {
+            lottery.draw_time = current_timestamp + 1730; // 1730초 = 28분
+            msg!("No tickets found. Draw time extended by 28 minutes.");
+            return Err(error!(CustomError::NoTickets));
+        }
 
         // 개발 테스트 환경에서 해당 validation 제외
         if next_draw_time <= current_timestamp {
@@ -96,13 +103,6 @@ pub mod lottery {
         let first_prize = distributable_balance * FIRST_PRIZE_PERCENT / 100;
         let second_prize = distributable_balance * SECOND_PRIZE_PERCENT / 100;
         let third_prize = distributable_balance * THIRD_PRIZE_PERCENT / 100;
-
-        let tickets_clone = lottery.tickets.clone();
-
-        if tickets_clone.is_empty() {
-            return Err(error!(CustomError::DrawNotAllowed));
-        }
-
         // 1등 랜덤 선택
         let mut rng = oorandom::Rand32::new(current_timestamp as u64);
         let winning_index = rng.rand_range(0..tickets_clone.len() as u32) as usize;
@@ -358,4 +358,6 @@ pub enum CustomError {
   InvalidDevAccount,
   #[msg("Invalid pool account.")]
   InvalidPoolAccount,
+  #[msg("No tickets found.")]
+  NoTickets,
 }

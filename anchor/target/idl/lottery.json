@@ -1,5 +1,5 @@
 {
-  "address": "BT5phA3eNcKRAjgbjWbqAsXLffC61ivRL4xtrg7uFWVd",
+  "address": "BG8NB9dvVzUDRTCxEKszF7A9E2cvLryC2yF7iTAqTNzz",
   "metadata": {
     "name": "lottery",
     "version": "0.1.0",
@@ -284,6 +284,11 @@
       "code": 6011,
       "name": "InvalidPoolAccount",
       "msg": "Invalid pool account."
+    },
+    {
+      "code": 6012,
+      "name": "NoTickets",
+      "msg": "No tickets found."
     }
   ],
   "types": [

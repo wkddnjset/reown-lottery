@@ -123,9 +123,9 @@ export const useLottery = () => {
       console.log('Pick Winners')
       if (!address) return
 
-      const now = new Date()
-      const nextDrawTime = Math.floor(now.getTime() / 1000) + 3600 * 12 // 12시간 후
-
+      const unixTimestampNow = Math.floor(Date.now() / 1000) // 현재 Unix 타임스탬프
+      const nextDrawTime = unixTimestampNow + 3600 * Number(RESET_LOTTERY_TIME) // 12시간 후
+      console.log('nextDrawTime', nextDrawTime)
       return program.methods
         .pickWinners(new BN(nextDrawTime))
         .accounts({
