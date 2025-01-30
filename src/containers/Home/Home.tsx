@@ -11,10 +11,12 @@ import {
   Image,
   Text,
   VStack,
+  useToast,
 } from '@chakra-ui/react'
 import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 
 import gsap from 'gsap'
+import { MdOutlineFileCopy } from 'react-icons/md'
 
 import { useLottery } from '@/hooks/useLottery'
 
@@ -24,9 +26,10 @@ import usePool from './hooks/usePool'
 function Home() {
   const [balance, setBalance] = useState(0)
   const { open } = useAppKit()
+  const toast = useToast()
   const { isConnected } = useAppKitAccount()
   const { getBalance } = usePool()
-  const { getLottery } = useLottery()
+  const { getLottery, poolAddress } = useLottery()
   const { data: lottery } = getLottery
 
   const router = useRouter()
@@ -126,7 +129,30 @@ function Home() {
         transform={'translateY(30px)'}
       >
         <Countdown />
+        <Flex
+          gap={'4px'}
+          mt={'15px'}
+          alignItems={'center'}
+          justifyContent={'center'}
+          cursor={'pointer'}
+          onClick={() => {
+            navigator.clipboard.writeText(poolAddress)
+            toast({
+              title: 'Copied to clipboard',
+              description: poolAddress,
+              status: 'success',
+              duration: 2000,
+            })
+          }}
+        >
+          <Text textStyle={'pre-caption-01'}>
+            REWARD POOL :{' '}
+            {poolAddress?.slice(0, 6) + '...' + poolAddress?.slice(-6)}
+          </Text>{' '}
+          <MdOutlineFileCopy />
+        </Flex>
       </Box>
+
       <Center
         border={'1px solid'}
         borderColor={'content.3'}

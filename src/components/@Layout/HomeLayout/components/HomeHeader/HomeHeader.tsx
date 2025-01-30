@@ -4,9 +4,11 @@ import { useRouter } from 'next/router'
 
 import { Link } from '@chakra-ui/next-js'
 import {
+  Box,
   Button,
   Container,
   ContainerProps,
+  Flex,
   HStack,
   Spinner,
   Text,
@@ -36,10 +38,26 @@ const HomeHeader = ({ ...props }: ContainerProps) => {
       {...props}
     >
       <Link variant={'unstyled'} href={ROUTES.MAIN}>
-        <Text
-          color={'content.7'}
-          textStyle={'pre-heading-02'}
-        >{`12'Lottery`}</Text>
+        <Flex alignItems={'center'} gap={'8px'}>
+          <Text
+            color={'content.7'}
+            textStyle={'pre-heading-02'}
+          >{`12'Lottery`}</Text>
+          <Flex
+            bg={'red.100'}
+            gap={'4px'}
+            px={'6px'}
+            py={'3px'}
+            borderRadius={'full'}
+            alignItems={'center'}
+            justifyContent={'center'}
+          >
+            <Box bg={'red.500'} boxSize={'6px'} borderRadius={'full'} />
+            <Text textStyle={'pre-caption-01'} color={'red.500'}>
+              DEVNET only
+            </Text>
+          </Flex>
+        </Flex>
       </Link>
       <HStack spacing="16px">
         {isAdmin && (
