@@ -16,16 +16,17 @@ import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 
 import gsap from 'gsap'
 
-import { useLottery } from '@/hooks/useLottery'
-
+// import { useLottery } from '@/hooks/useLottery'
 import Countdown from './components/Countdown'
+import usePool from './hooks/usePool'
 
 function Home() {
+  const [balance, setBalance] = useState(0)
   const { open } = useAppKit()
   const { isConnected } = useAppKitAccount()
-  const { getLottery } = useLottery()
-
-  const { data: lottery } = getLottery
+  const { getBalance } = usePool()
+  // const { getLottery } = useLottery()
+  // const { data: lottery } = getLottery
 
   const router = useRouter()
 
@@ -34,7 +35,6 @@ function Home() {
   const buttonsRef = useRef(null)
 
   useEffect(() => {
-    // 0.5초 지연을 위한 타임아웃 설정
     const timer = setTimeout(() => {
       const timeline = gsap.timeline({
         defaults: { duration: 0.6, ease: 'power3.out' },
@@ -80,12 +80,19 @@ function Home() {
     }
   }, [])
 
-  const totalReward = useMemo(() => {
-    return lottery?.tickets && lottery?.tickets.length > 0 ?
-        lottery?.tickets.length * 0.0095
-      : 0
-  }, [lottery?.tickets])
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const balance = await getBalance()
+      setBalance(balance ?? 0)
+    }
+    fetchBalance()
+  }, [getBalance])
 
+  // const totalReward = useMemo(() => {
+  //   return lottery?.tickets && lottery?.tickets.length > 0 ?
+  //       lottery?.tickets.length * 0.0095
+  //     : 0
+  // }, [lottery?.tickets])
   return (
     <Center
       h={'100%'}
@@ -124,7 +131,7 @@ function Home() {
               Total Reward
             </Text>
             <Text textStyle={'pre-display-02'} lineHeight={'1'}>
-              {Number(totalReward).toFixed(4)}
+              {balance > 0 ? Number(balance - 2.159911).toFixed(4) : `0.0000`}
             </Text>
             <Text textStyle={'pre-caption-01'} color={'content.5'} mt={'5px'}>
               SOL
