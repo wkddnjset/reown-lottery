@@ -24,7 +24,7 @@ const provider = new AnchorProvider(connection, wallet, {
   commitment: 'confirmed',
 })
 
-export async function GET(request: NextRequest) {
+async function pickWinner(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization')
 
@@ -88,3 +88,5 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: error.message }, { status: 500 })
   }
 }
+
+export default pickWinner
